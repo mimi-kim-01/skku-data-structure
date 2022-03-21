@@ -98,9 +98,7 @@ while True:
             arr.clear()
             current = -1
         elif request[i] == 'M':
-            if request[i+1] is None: 
-                move(arr, 0)
-            elif request[i+1] == 'n':
+            if request[i+1] == 'n':
                 move(arr, size-1)
             elif request[i+1] == 'P':
                 move(arr, current-1)
