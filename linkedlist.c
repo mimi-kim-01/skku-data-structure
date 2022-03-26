@@ -1,7 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#pragma warning(disable:4996)
+#pragma warning(disable:4047)
 
-//struct
+//linkedlist
 typedef struct Node{
     char data;
     struct Node* next;
@@ -46,70 +49,85 @@ int main(){
     view();
     while (1){
         print_list(list);
-        char request[30] = {0};
+        char request[21] = {0};
         printf("\n>>> ");
         gets(request);
         for (int i = 0; i < strlen(request); i++){
             switch (request[i]){
-                case 'G':
-                    get_data(list);
-                    break;
-                case '+':
-                    add(list, NULL, request[i+1]);
-                    i++;
-                    break;
-                case 'N':
-                    add(list, request[i], request[i+2]);
-                    i += 2;
-                    break;
-                case 'T':
-                    addTail(list, request[i+2]);
-                    i += 2;
-                    break;
-                case '<':
-                    int cnt = 0;
-                    for (int j = 0; j < 10; j++){
-                        if (request[i+j] != 'N') break;
-                        cnt++;
-                    }
-                    for (int i = 0; i < cnt; i++) i++;
-                    traverse_front(list, cnt);
-                    break;
-                case '>':
-                    int ccnt = 0;
-                    for (int j = 0; j < 10; j++){
-                        if (request[i+j] != 'P') break;
-                        ccnt++;
-                    }
-                    for (int i = 0; i < ccnt; i++) i++;
-                    traverse_rear(list, ccnt);
-                    break;
-                case '-':
-                    delete(list);
-                    break;
-                case '=':
-                    replace(list, request[i+1]);
-                    i++;
-                    break;
-                case '#':
-                    data_count(list);
-                    break;
-                case '?':
-                    is_member(list, request[i+1]);
-                    i++;
-                    break;
-                case 'E':
-                    is_empty(list);
-                case 'C':
-                    clear(list);
-                case 'U':
-                    upper(list);
-                case 'D':
-                    lower(list);
-                case 'V':
-                    view();
-                default: //move to position
-                    move_position(list, (int)request[i]);
+            case 'G':
+                get_data(list);
+                break;
+            case '+':
+                if (request[i+1] == '\0') break;
+                if (list->len == 0) addTail(list, request[i+1]);
+                else {
+                    add(list, '\0', request[i+1]);
+                }
+                i++;
+                break;
+            case 'N':
+                add(list, request[i], request[i+2]);
+                i += 2;
+                break;
+            case 'T':
+                addTail(list, request[i+2]);
+                i += 2;
+                break;
+            case '<': ;
+                int cnt = 0;
+                i++;
+                for (int j = 0; j < 10; j++){
+                    if (request[i+j] != 'N') break;
+                    cnt++;
+                }
+                traverse_front(list, cnt);
+                for (int i = 0; i < cnt; i++) i++;
+                break;
+            case '>': ;
+                int ccnt = 0;
+                i++;
+                for (int j = 0; j < 10; j++){
+                    if (request[i+j] != 'P') break;
+                    ccnt++;
+                }
+                traverse_rear(list, ccnt);
+                for (int i = 0; i < ccnt; i++) i++;
+                break;
+            case '-':
+                delete(list);
+                break;
+            case '=':
+                replace(list, request[i+1]);
+                i++;
+                break;
+            case '#':
+                data_count(list);
+                break;
+            case '?':
+                is_member(list, request[i+1]);
+                i++;
+                break;
+            case 'E':
+                is_empty(list);
+                break;
+            case 'C':
+                clear(list);
+                printf("THE LIST IS CLEARED!");
+                break;
+            case 'U':
+                upper(list);
+                break;
+            case 'D':
+                lower(list);
+                break;
+            case 'V':
+                view();
+                break;
+            case 'L':
+                break;
+            default: //move to position
+                move_position(list, (int)request[i]);
+                break;
             }
         }
     }
@@ -123,20 +141,21 @@ void print_list(List* list){
     if (current == NULL) printf("THE LIST IS EMPTY!");
     else {
         while (current != NULL){
-            if (index == list->current) printf("[%c] ", current->data);
-		else printf("%c ", current->data);
-        current = current->next;
+            if (index == list->current-1) printf("[%c] ", current->data);
+		    else printf("%c ", current->data);
+            current = current->next;
+            index++;
         }
     }
 }
 
 void get_data(List* list){
-    printf("CURRENT DATA: %c", list->position->data);
+    printf("CURRENT DATA: %c ", list->position->data);
 }
 
 void traverse_front(List* list, int count){
     list->position = list->head;
-    list->current = 0;
+    list->current = 1;
     for (int i = 0; i < count; i++){
         list->position = list->position->next;
         list->current++;
@@ -144,18 +163,19 @@ void traverse_front(List* list, int count){
 }
 
 void traverse_rear(List* list, int count){
-    Node* current = list->head->next;
-    while (current != NULL){
-        current = current->next;
-    }
-    for (int i = 0; i < count; i++){
-        list->current--;
-    }
     list->position = list->head;
-    for (int i = 0; i < list->current; i++){
+    for (int i = 0; i < list->len; i++){
         list->position = list->position->next;
     }
+    list->current = list->len;
+    if (count > 0){
+        for (int i = 0; i < count; i++){
+            list->position = list->position->next;
+            list->current--;
+        }
+    }
 }
+
 void move_position(List* list, int index){
     list->current = index-1;
     list->position = list->head;
@@ -167,7 +187,7 @@ void move_position(List* list, int index){
 void delete(List* list){
     Node* prev = list->head;
     Node* del = list->position;
-    if (list->len == 0) prinf("THE LIST IS EMPTY!");
+    if (list->len == 0) printf("THE LIST IS EMPTY!");
     else {
         for (int i = 0; i < list->len; i++){
             if (prev->next == del) break;
@@ -207,20 +227,20 @@ void addTail(List* list, char data){
     new->data = data;
     list->position->next = new;
     list->position = new;
-    list->current++;
     list->len++;
+    if (list->len == 1) list->current++;
 }
 
 void add(List* list, char count, char data){
     Node* new = malloc(sizeof(Node));
-    if (count == NULL){
+    if (count == '\0'){
         Node* prev = NULL;
         prev = list->head;
         for (int i = 0; i <list->current-1; i++) prev = prev->next;
-        new->next = list->position;
         new->data = data;
+        new->next = list->position;
         prev->next = new;
-        list->len--;
+        list->len++;
         list->position = new;
     }
     else if (count == 'N'){
@@ -309,6 +329,6 @@ void view(){
     printf("VIEW MENU                   | V\n");
     printf("===SOME WARNINGS TO KEEP IN MIND===\n");
     printf("* n is a NUMBER, not an alphabet.\n");
-    printf("* SPACING between COMMANDS.\n");
+    printf("* NO SPACING between COMMANDS.\n");
     printf("* ONLY 1 data per 1 command.\n");
 }
