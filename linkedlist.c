@@ -1,15 +1,16 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 //struct
 typedef struct Node{
     char data;
-    Node* next;
+    struct Node* next;
 }Node;
 
 typedef struct List{
     Node* head;
-    Node* current;
-    int cursor;
+    Node* position;
+    int current; 
     int len;
 }List;
 
@@ -18,6 +19,7 @@ void print_list(List* list);
 void get_data(List* list);
 void traverse_front(List* list, int count);
 void traverse_rear(List* list, int count);
+void move_position(List* list, int index);
 void delete(List* list);
 void addTail(List* list, char data);
 void add(List* list, char count, char data);
@@ -25,38 +27,221 @@ void replace(List* list, char new);
 void data_count(List* list);
 void is_member(List* list, char data);
 void is_empty(List* list);
+void clear(List *list);
 void upper(List* list);
 void lower(List* list);
 void view();
 
 //main
 int main(){
-    Node* head = malloc(sizeof(Node)); //create 
-    List* list = malloc(sizeof(List)); 
+    Node* head = malloc(sizeof(Node)); //create node
+    List* list = malloc(sizeof(Node)); 
     list->head = head;
-    list->current = list->head;
-    list->cursor = 0;
+    list->position = list->head;
+    list->current = 0;
     list->len = 0;
     head->data = NULL;
     head->next = NULL;
-
-
+    printf("저희 조는 add 함수를 N+(data)와 T+(data)와 그냥 +(data)의 세 가지 다른 입력 방식을 통해 입력받는 것으로 수정했습니다.\n");
+    view();
+    while (1){
+        print_list(list);
+        char request[30] = {0};
+        printf("\n>>> ");
+        gets(request);
+        for (int i = 0; i < strlen(request); i++){
+            switch (request[i]){
+                case 'G':
+                    get_data(list);
+                    break;
+                case '+':
+                    add(list, NULL, request[i+1]);
+                    i++;
+                    break;
+                case 'N':
+                    add(list, request[i], request[i+2]);
+                    i += 2;
+                    break;
+                case 'T':
+                    addTail(list, request[i+2]);
+                    i += 2;
+                    break;
+                case '<':
+                    int cnt = 0;
+                    for (int j = 0; j < 10; j++){
+                        if (request[i+j] != 'N') break;
+                        cnt++;
+                    }
+                    for (int i = 0; i < cnt; i++) i++;
+                    traverse_front(list, cnt);
+                    break;
+                case '>':
+                    int ccnt = 0;
+                    for (int j = 0; j < 10; j++){
+                        if (request[i+j] != 'P') break;
+                        ccnt++;
+                    }
+                    for (int i = 0; i < ccnt; i++) i++;
+                    traverse_rear(list, ccnt);
+                    break;
+                case '-':
+                    delete(list);
+                    break;
+                case '=':
+                    replace(list, request[i+1]);
+                    i++;
+                    break;
+                case '#':
+                    data_count(list);
+                    break;
+                case '?':
+                    is_member(list, request[i+1]);
+                    i++;
+                    break;
+                case 'E':
+                    is_empty(list);
+                case 'C':
+                    clear(list);
+                case 'U':
+                    upper(list);
+                case 'D':
+                    lower(list);
+                case 'V':
+                    view();
+                default: //move to position
+                    move_position(list, (int)request[i]);
+            }
+        }
+    }
     return 0;
 }
 
 //functions specific
-void print_list(List* list);
-void get_data(List* list);
-void traverse_front(List* list, int count);
-void traverse_rear(List* list, int count);
-void delete(List* list);
-void addTail(List* list, char data);
+void print_list(List* list){
+    Node* current = list->head->next;
+    int index = 0;
+    if (current == NULL) printf("THE LIST IS EMPTY!");
+    else {
+        while (current != NULL){
+            if (index == list->current) printf("[%c] ", current->data);
+		else printf("%c ", current->data);
+        current = current->next;
+        }
+    }
+}
+
+void get_data(List* list){
+    printf("CURRENT DATA: %c", list->position->data);
+}
+
+void traverse_front(List* list, int count){
+    list->position = list->head;
+    list->current = 0;
+    for (int i = 0; i < count; i++){
+        list->position = list->position->next;
+        list->current++;
+    }
+}
+
+void traverse_rear(List* list, int count){
+    Node* current = list->head->next;
+    while (current != NULL){
+        current = current->next;
+    }
+    for (int i = 0; i < count; i++){
+        list->current--;
+    }
+    list->position = list->head;
+    for (int i = 0; i < list->current; i++){
+        list->position = list->position->next;
+    }
+}
+void move_position(List* list, int index){
+    list->current = index-1;
+    list->position = list->head;
+    for (int i = 0; i < list->current; i++){
+        list->position = list->position->next;
+    }
+}
+
+void delete(List* list){
+    Node* prev = list->head;
+    Node* del = list->position;
+    if (list->len == 0) prinf("THE LIST IS EMPTY!");
+    else {
+        for (int i = 0; i < list->len; i++){
+            if (prev->next == del) break;
+            prev = prev->next;
+        }
+        if (del->next == NULL){ 
+            prev->next == NULL;
+            if (list->len == 1){
+                list->current = 0;
+                list->position = list->head;
+            }
+            else{
+                list->current = 1;
+                list->position = list->head->next;
+            }
+            free(del); 
+        }
+        else{
+            prev->next = del->next;
+            list->position = del->next;
+            free(del);
+        }
+        list->len--;
+    }
+}
+
+void addTail(List* list, char data){
+    Node* new = malloc(sizeof(Node));
+    if (list->position->next != NULL){
+        Node* current = list->head;
+        while (current->next != NULL){
+            current = current->next;
+        }
+        list->position = current;
+    }
+    new->next = NULL;
+    new->data = data;
+    list->position->next = new;
+    list->position = new;
+    list->current++;
+    list->len++;
+}
+
 void add(List* list, char count, char data){
-    
+    Node* new = malloc(sizeof(Node));
+    if (count == NULL){
+        Node* prev = NULL;
+        prev = list->head;
+        for (int i = 0; i <list->current-1; i++) prev = prev->next;
+        new->next = list->position;
+        new->data = data;
+        prev->next = new;
+        list->len--;
+        list->position = new;
+    }
+    else if (count == 'N'){
+        if (list->position->next == NULL){
+            new->data = data;
+            new->next = NULL;
+            list->position->next = new;
+        }
+        else {
+            new->data = data;
+            new->next = list->position->next;
+            list->position->next = new;
+        }
+        list->position = new;
+        list->current++;
+        list->len++;
+    }
 }
 
 void replace(List* list, char new){
-    list->current->data = new;
+    list->position->data = new;
 }
 
 void data_count(List* list){
@@ -65,13 +250,16 @@ void data_count(List* list){
 
 
 void is_member(List* list, char data){
+    Node* temp = list->head;
     int index;
     for (index = 0; index < list->len; index++){
-        if(list->current->data == data){
-            printf("%d: ", index);
+        if (temp->next == NULL) break;
+        if (temp->data == data){
+            printf("%d: ", index+1);
+            break;
         }
+        temp = temp->next;
     }
-    list->cursor = index;
 }
 
 void is_empty(List* list){
@@ -79,15 +267,25 @@ void is_empty(List* list){
     else printf("False");
 }
 
+void clear(List *list){
+    Node* prev = NULL;
+    while (list->head->next != NULL){
+        prev = list->head->next;
+        list->head->next = prev->next;
+        free(prev);
+    }
+    free(list->head);
+}
+
 void upper(List* list){
-    if ((list->current->data >= 'a') && (list->current->data <= 'z')){
-        list->current->data = list->current->data -'a' + 'A';
+    if (( list->position->data >= 'a') && (list->position->data <= 'z')){
+         list->position->data = list->position->data -'a' + 'A';
     }
 }
 
 void lower(List* list){
-    if ((list->current->data >= 'A') && (list->current->data <= 'a')){
-        list->current->data = list->current->data -'A' + 'a';
+    if ((list->position->data >= 'A') && (list->position->data <= 'a')){
+        list->position->data = list->position->data -'A' + 'a';
         }
 }
 
