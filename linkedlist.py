@@ -17,6 +17,7 @@ def view():
     print("TO UPPER CASE               | U")
     print("TO LOWER CASE               | D")
     print("VIEW MENU                   | V")
+    print("PRINT LIST                  | L")
     print("QUIT                        | Q")
     print("===SOME WARNINGS TO KEEP IN MIND===")
     print("* n is a NUMBER, not an alphabet.")
@@ -26,7 +27,7 @@ def view():
 #linkedlist
 class Node: #doubly
     def __init__(self, data):
-        self.data = None
+        self.data = data
         self.prev = None
         self.next = None
 
@@ -44,22 +45,23 @@ class List:
         self.current.next = new
         new.prev = self.current
         self.current = new
-        self.len += 1
        
     def add(self, data, count):
         new = Node(data)
-        if count is None:
-            new.data = data
-            new.next = self.current
-            self.current.prev = new.next
-            self.len += 1
-            self.current = new
+        if count == '0':
+            if (self.len == 0):
+                self.addTail(data)
+            else:
+                new.next = self.current
+                new.prev = self.current.prev
+                self.current.prev.next = new
+                self.current.prev = new
+                self.current = new
         elif count == 'N':
-            new.data = data
+            new.prev = self.current
             new.next = self.current.next
             self.current.next = new
-        self.current = new
-        self.len += 1
+            self.current = self.current.next
     
     def replace(self, new):
         self.current.data = new
@@ -68,11 +70,11 @@ class List:
         return self.len
 
     def is_member(self, data):
-        search = self.head
+        search = self.head.next
         for i in range(0, self.len):
-            search = search.next
             if search.data == data:
-                return i+1
+                return i + 1
+            search = search.next
         return -1
 
     def is_empty(self):
@@ -82,17 +84,24 @@ class List:
             return 0
 
     def delete(self):
-        if self.is_empty() is True:
+        if self.len == 0:
             print("THE LIST IS EMPTY")
-            return -1
+            return 
+        elif self.len == 1: #delete the last remaining
+            self.current = self.head
+            self.current.next = None
         else:
-            self.current.prev.next = self.current.next
-            self.current.next.prev = self.current.prev
+            if self.current.next is None: #delete the last
+                self.current.prev.next = None
+                self.current = self.head.next
+            else:
+                self.current.prev.next = self.current.next
+                self.current.next.prev = self.current.prev
+                self.current = self.current.next
         self.len -= 1
-        self.current = self.current.next
     
     def clear(self):
-        while self.is_empty() is False:
+        while self.len != 0:
             self.delete()
         
     def upper(self):
@@ -108,24 +117,27 @@ class List:
         return self.current.data
     
     def traverse_front(self, count):
-        self.current = self.head
-        for i in range(1, count+1):
-            self.current = self.current.next
+        self.current = self.head.next
+        if count != 0:
+            for i in range(count):
+                self.current = self.current.next
     
     def traverse_rear(self, count):
+        self.current = self.head.next
         while self.current.next is not None:
             self.current = self.current.next
-        for i in range(1, count+1):
-            self.current = self.current.prev
+        if count != 0:
+            for i in range(count):
+                self.current = self.current.prev
     
     def move_position(self, index):
         index = int(index)
         self.current = self.head
-        for i in range(1, index+1):
+        for i in range(index):
             self.current = self.current.next
     
     def print_list(self):
-        if self.is_empty() is True:
+        if self.len == 0:
             print("THE LIST IS EMPTY!")
             return
         idx = self.head.next
@@ -146,47 +158,54 @@ while True:
         print("THIS PROGRAM WILL END SOON!")
         break
     i = 0
-    while (i < len(request)):
+    while i < len(request):
         if request[i] == 'G':
-            llist.get_data(request[i+1])
-            i += 1
-        elif request[i] == '>':
-            cnt = 0
-            i += 1
-            for j in range(10):
-                if (request[i+j] != 'N'): break
-                cnt += 1
-                i += 1
-            llist.traverse_front(cnt)
+            result = llist.get_data()
+            print("CURRENT DATA:", result)
         elif request[i] == '<':
             cnt = 0
             i += 1
-            for j in range(10):
-                if (request[i+j] != 'P'): break
+            if (len(request) != 1 and request[i+1] == 'N'):
                 cnt += 1
-                i += 1
+                for j in range(1, len(request) - 1, 2):
+                    if (request[i+j] != 'N'): break
+                    cnt += 1
+                    i += 1
+            llist.traverse_front(cnt)
+        elif request[i] == '>':
+            cnt = 0
+            i += 1
+            if (len(request) != 1 and request[i+1] == 'P'):
+                cnt += 1
+                for j in range(1, len(request) - 1, 2):
+                    if (request[i+j] != 'P'): break
+                    cnt += 1
+                    i += 1
             llist.traverse_rear(cnt)
         elif request[i] == '-':
             llist.delete()
         elif request[i] == 'T':
             llist.addTail(request[i+2])
+            llist.len += 1
             i += 2
         elif request[i] == '+':
-            llist.add(request[i+1], None)
+            llist.add(request[i+1], '0')
+            llist.len += 1
             i += 1
         elif request[i] == 'N':
             llist.add(request[i+2], 'N')
             i += 2
         elif request[i] == '=':
             llist.replace(request[i+1])
+            i += 1
         elif request[i] == '#':
             result = llist.data_count()
-            print(result)
+            print("DATA COUNT:", result)
         elif request[i] == '?':
             result = llist.is_member(request[i+1])
             i += 1
             if result == -1: print("FAILED")
-            else: print("%d: " %result)
+            else: print("%d: " %result, end = '')
         elif request[i] == 'E':
             result = llist.is_empty()
             if result == 1: print("True")
@@ -198,8 +217,10 @@ while True:
             llist.upper()
         elif request[i] == 'D':
             llist.lower()
+        elif request[i] == 'L':
+            break
         elif request[i] == 'V':
             view()
         else:
             llist.move_position(request[i])
-        i += 1
+        i += 2
