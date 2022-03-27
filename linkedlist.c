@@ -118,7 +118,7 @@ int main(){
                 break;
             case 'C':
                 clear(list);
-                printf("THE LIST IS CLEARED!");
+                printf("THE LIST IS CLEARED!\n");
                 break;
             case 'U':
                 upper(list);
@@ -157,15 +157,18 @@ void print_list(List* list){
 }
 
 void get_data(List* list){
-    printf("CURRENT DATA: %c ", list->position->data);
+    printf("CURRENT DATA: %c\n", list->position->data);
 }
 
 void traverse_front(List* list, int count){
     list->position = list->head;
     list->current = 1;
-    for (int i = 0; i < count; i++){
+    if (count != 0){
         list->position = list->position->next;
-        list->current++;
+        for (int i = 0; i < count; i++){
+            list->position = list->position->next;
+            list->current++;
+        }
     }
 }
 
@@ -176,16 +179,15 @@ void traverse_rear(List* list, int count){
     }
     list->current = list->len;
     if (count != 0){
-        for (int i = 0; i < count; i++){
-            list->position = list->position->next;
-            list->current--;
-        }
+        list->position = list->head;
+        for (int i = 0; i < count; i++) list->current--;
+        for (int i = 0; i < list->len - count; i++) list->position = list->position->next;
     }
 }
 
 void move_position(List* list, int index){
     list->current = index-1;
-    list->position = list->head;
+    list->position = list->head->next;
     for (int i = 0; i < list->current; i++){
         list->position = list->position->next;
     }
@@ -194,31 +196,32 @@ void move_position(List* list, int index){
 void delete(List* list){
     Node* prev = list->head;
     Node* del = list->position;
-    if (list->len == 0) printf("THE LIST IS EMPTY!");
-    else {
-        for (int i = 0; i < list->len; i++){
-            if (prev->next == del) break;
-            prev = prev->next;
-        }
-        if (del->next == NULL){ 
-            prev->next == NULL;
-            if (list->len == 1){
-                list->current = 0;
-                list->position = list->head;
-            }
-            else{
-                list->current = 1;
-                list->position = list->head->next;
-            }
-            free(del); 
+    if (list->len == 0) {
+        printf("THE LIST IS EMPTY!"); 
+        return;
+    }
+    for (int i = 0; i < list->len; i++){
+        if (prev->next == del) break;
+        prev = prev->next;
+    }
+    if (del->next == NULL){ 
+        prev->next == NULL;
+        if (list->len == 1){
+            list->current = 0;
+            list->position = list->head;
         }
         else{
-            prev->next = del->next;
-            list->position = del->next;
-            free(del);
+            list->current = 1;
+            list->position = list->head->next;
         }
-        list->len--;
+        free(del); 
     }
+    else{
+        prev->next = del->next;
+        list->position = del->next;
+        free(del);
+    }
+    list->len--;
 }
 
 void addTail(List* list, char data){
@@ -236,6 +239,7 @@ void addTail(List* list, char data){
     list->position = new;
     list->len++;
     if (list->len == 1) list->current++;
+    else list->current++;
 }
 
 void add(List* list, char count, char data){
@@ -272,7 +276,7 @@ void replace(List* list, char new){
 }
 
 void data_count(List* list){
-    printf("%d\n", list->len);
+    printf("DATA COUNT: %d\n", list->len);
 }
 
 
@@ -290,18 +294,20 @@ void is_member(List* list, char data){
 }
 
 void is_empty(List* list){
-    if (list->len == 0) printf("True");
-    else printf("False");
+    if (list->len == 0) printf("True\n");
+    else printf("False\n");
 }
 
 void clear(List *list){
-    Node* prev = NULL;
-    while (list->head->next != NULL){
-        prev = list->head->next;
-        list->head->next = prev->next;
-        free(prev);
+    Node* clear = list->head->next;
+    while (clear != NULL){
+        clear = clear->next;
     }
-    free(list->head);
+    free(clear);
+    list->head->next = NULL;
+    list->current = 0;
+    list->len = 0;
+    list->position = list->head;
 }
 
 void upper(List* list){
@@ -334,6 +340,7 @@ void view(){
     printf("TO UPPER CASE               | U\n");
     printf("TO LOWER CASE               | D\n");
     printf("VIEW MENU                   | V\n");
+    printf("PRINT LIST                  | L\n");
     printf("QUIT                        | Q\n");
     printf("===SOME WARNINGS TO KEEP IN MIND===\n");
     printf("* n is a NUMBER, not an alphabet.\n");
