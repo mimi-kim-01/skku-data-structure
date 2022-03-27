@@ -132,7 +132,7 @@ int main(){
             case 'L':
                 break;
             default: //move to position
-                move_position(list, (int)request[i]);
+                move_position(list, request[i] - '0');
                 break;
             }
             i++;
@@ -186,11 +186,13 @@ void traverse_rear(List* list, int count){
 }
 
 void move_position(List* list, int index){
-    list->current = index-1;
-    list->position = list->head->next;
-    for (int i = 0; i < list->current; i++){
-        list->position = list->position->next;
+    Node* move = NULL;
+    move = list->head->next;
+    for (int i = 0; i < index - 1; i++){
+        move = move->next;
     }
+    list->current = index;
+    list->position = move;
 }
 
 void delete(List* list){
@@ -286,7 +288,7 @@ void is_member(List* list, char data){
     for (index = 0; index < list->len; index++){
         if (temp->next == NULL) break;
         if (temp->data == data){
-            printf("%d: ", index+1);
+            printf("%d: ", index);
             break;
         }
         temp = temp->next;
