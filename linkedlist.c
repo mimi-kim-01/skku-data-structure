@@ -45,13 +45,19 @@ int main(){
     list->len = 0;
     head->data = NULL;
     head->next = NULL;
-    printf("저희 조는 add 함수를 N+(data)와 T+(data)와 그냥 +(data)의 세 가지 다른 입력 방식을 통해 입력받는 것으로 수정했습니다.\n");
+    //warnings
+    printf("Our group decided to differentiate the input forms of ADD function\n");
+    printf("PLEASE READ OUR MENU CAREFULLY!\n");
     view();
     while (1){
         print_list(list);
         char request[21] = {0};
         printf("\n>>> ");
         gets(request);
+        if (request[0] == 'Q'){
+            printf("THIS PROGRAM WILL END SOON!\n");
+            break;
+        }
         for (int i = 0; i < strlen(request); i++){
             switch (request[i]){
             case 'G':
@@ -67,16 +73,16 @@ int main(){
                 break;
             case 'N':
                 add(list, request[i], request[i+2]);
-                i += 2;
+                i += 3;
                 break;
             case 'T':
                 addTail(list, request[i+2]);
-                i += 2;
+                i += 3;
                 break;
             case '<': ;
                 int cnt = 0;
                 i++;
-                for (int j = 0; j < 10; j++){
+                for (int j = 1; j < 10; j+=2){
                     if (request[i+j] != 'N') break;
                     cnt++;
                 }
@@ -86,7 +92,7 @@ int main(){
             case '>': ;
                 int ccnt = 0;
                 i++;
-                for (int j = 0; j < 10; j++){
+                for (int j = 1; j < 10; j+=2){
                     if (request[i+j] != 'P') break;
                     ccnt++;
                 }
@@ -129,6 +135,7 @@ int main(){
                 move_position(list, (int)request[i]);
                 break;
             }
+            i++;
         }
     }
     return 0;
@@ -168,7 +175,7 @@ void traverse_rear(List* list, int count){
         list->position = list->position->next;
     }
     list->current = list->len;
-    if (count > 0){
+    if (count != 0){
         for (int i = 0; i < count; i++){
             list->position = list->position->next;
             list->current--;
@@ -327,8 +334,9 @@ void view(){
     printf("TO UPPER CASE               | U\n");
     printf("TO LOWER CASE               | D\n");
     printf("VIEW MENU                   | V\n");
+    printf("QUIT                        | Q\n");
     printf("===SOME WARNINGS TO KEEP IN MIND===\n");
     printf("* n is a NUMBER, not an alphabet.\n");
-    printf("* NO SPACING between COMMANDS.\n");
+    printf("* SPACING between COMMANDS.\n");
     printf("* ONLY 1 data per 1 command.\n");
 }
