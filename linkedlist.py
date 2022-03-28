@@ -23,6 +23,9 @@ def view():
     print("* n is a NUMBER, not an alphabet.")
     print("* SPACING between COMMANDS.")
     print("* ONLY 1 data per 1 command.")
+    print("* TRAVERSE cannot be used with other options.")
+    print("* < N means traverse front and move next.")
+    print("* > P means traverse rear and move previous.")
 
 #linkedlist
 class Node: 
@@ -151,6 +154,8 @@ class List: #doubly
 
 #main
 llist = List()
+print("Our group decided to differentiate the input forms of ADD function")
+print("PLEASE READ OUR MENU CAREFULLY!")
 view()
 while True:
     llist.print_list()

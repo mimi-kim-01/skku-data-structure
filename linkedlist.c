@@ -81,23 +81,21 @@ int main(){
                 break;
             case '<': ;
                 int cnt = 0;
-                i++;
-                for (int j = 1; j < 10; j+=2){
-                    if (request[i+j] != 'N') break;
-                    cnt++;
+                for(int i = 1; request[i] != NULL; i++){
+                    if (request[i] == 'N') cnt++;
+                    else continue;
                 }
+                i += 2*cnt;
                 traverse_front(list, cnt);
-                for (int i = 0; i < cnt; i++) i++;
                 break;
             case '>': ;
                 int ccnt = 0;
-                i++;
-                for (int j = 1; j < 10; j+=2){
-                    if (request[i+j] != 'P') break;
-                    ccnt++;
+                for(int i = 1; request[i] != NULL; i++){
+                    if (request[i] == 'P') ccnt++;
+                    else continue;
                 }
+                i += 2*ccnt;
                 traverse_rear(list, ccnt);
-                for (int i = 0; i < ccnt; i++) i++;
                 break;
             case '-':
                 delete(list);
@@ -173,20 +171,11 @@ void traverse_front(List* list, int count){
 }
 
 void traverse_rear(List* list, int count){
-    list->position = list->head;
-    for (int i = 0; i < list->len; i++){
-        list->position = list->position->next;
-    }
-    list->current = list->len;
-    if (count != 0){
-        list->position = list->head;
-        for (int i = 0; i < count; i++) list->current--;
-        for (int i = 0; i < list->len - count; i++) list->position = list->position->next;
-    }
+    move_position(list, list->len - count);
 }
 
 void move_position(List* list, int index){
-    Node* move = NULL;
+    Node* move = malloc(sizeof(Node));
     move = list->head->next;
     for (int i = 0; i < index - 1; i++){
         move = move->next;
@@ -247,13 +236,13 @@ void addTail(List* list, char data){
 void add(List* list, char count, char data){
     Node* new = malloc(sizeof(Node));
     if (count == '\0'){
-        Node* prev = NULL;
+        Node* prev = malloc(sizeof(Node));
         prev = list->head;
         for (int i = 0; i <list->current-1; i++) prev = prev->next;
         new->data = data;
         new->next = list->position;
         prev->next = new;
-        list->len++;
+        list->len++; //maintain current
         list->position = new;
     }
     else if (count == 'N'){
@@ -285,10 +274,13 @@ void data_count(List* list){
 void is_member(List* list, char data){
     Node* temp = list->head;
     int index;
-    for (index = 0; index < list->len; index++){
-        if (temp->next == NULL) break;
+    for (index = 0; index < list->len + 1; index++){
         if (temp->data == data){
             printf("%d: ", index);
+            break;
+        }
+        if (temp->next == NULL) {
+            printf("FAILED");
             break;
         }
         temp = temp->next;
@@ -348,4 +340,7 @@ void view(){
     printf("* n is a NUMBER, not an alphabet.\n");
     printf("* SPACING between COMMANDS.\n");
     printf("* ONLY 1 data per 1 command.\n");
+    printf("* TRAVERSE cannot be used with other options.\n");
+    printf("* < N means traverse front and move next.\n");
+    printf("* > P means traverse rear and move previous.\n");
 }
