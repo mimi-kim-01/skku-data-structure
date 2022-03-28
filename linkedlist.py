@@ -25,19 +25,20 @@ def view():
     print("* ONLY 1 data per 1 command.")
 
 #linkedlist
-class Node: #doubly
+class Node: 
     def __init__(self, data):
         self.data = data
         self.prev = None
         self.next = None
 
-class List:
+class List: #doubly
     def __init__(self):
         new = Node(None)
         self.head = new
         self.len = 0
         self.current = self.head
 
+    #functions
     def addTail(self, data):
         new = Node(data)
         while self.current.next is not None:
@@ -164,23 +165,21 @@ while True:
             print("CURRENT DATA:", result)
         elif request[i] == '<':
             cnt = 0
-            i += 1
-            if (len(request) != 1 and request[i+1] == 'N'):
-                cnt += 1
-                for j in range(1, len(request) - 1, 2):
+            if (len(request) != 1 and request[i+2] == 'N'):
+                i += 1
+                for j in range(1, len(request)-1, 2):
                     if (request[i+j] != 'N'): break
                     cnt += 1
-                    i += 1
+            i += cnt*2
             llist.traverse_front(cnt)
         elif request[i] == '>':
             cnt = 0
-            i += 1
-            if (len(request) != 1 and request[i+1] == 'P'):
-                cnt += 1
-                for j in range(1, len(request) - 1, 2):
+            if (len(request) != 1 and request[i+2] == 'P'):
+                i += 1
+                for j in range(1, len(request)-1, 2):
                     if (request[i+j] != 'P'): break
                     cnt += 1
-                    i += 1
+            i += cnt*2
             llist.traverse_rear(cnt)
         elif request[i] == '-':
             llist.delete()
