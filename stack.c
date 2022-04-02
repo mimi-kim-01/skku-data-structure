@@ -1,9 +1,10 @@
 #include <stdio.h>
+#include <string.h>
 #define MAX_NUM 10
 
 //stack
 typedef struct stack{
-    char* data[MAX_NUM];
+    char data[MAX_NUM];
     int top; 
 }Stack;
 
@@ -14,7 +15,7 @@ char peek(Stack* stack);
 void is_full(Stack* stack);
 void element_count(Stack* stack);
 void top(Stack* stack);
-void is_member(Stack* stack, char element);
+int is_member(Stack* stack, char element);
 void replace(Stack* stack, char element);
 void clear(Stack* stack);
 void print_stack(Stack* stack);
@@ -29,6 +30,7 @@ int main(){
     view();
     while (1){
         print_stack(stack);
+        int count = 0; //for 'default case' in switch statement
         char request[21] = {0};
         printf("\n>>> ");
         gets(request);
@@ -43,10 +45,10 @@ int main(){
                 i++;
                 break;
             case '-':
-                pop(stack);
+                printf("POPPED ELEMENT: %c\n", pop(stack)); 
                 break;
             case 'P':
-                printf("CURRENT TOP: %c", peek(stack));
+                printf("CURRENT TOP: %c\n", peek(stack));
                 break;
             case 'T':
                 top(stack);
@@ -59,7 +61,8 @@ int main(){
                 element_count(stack);
                 break;
             case '?':
-                is_member(stack, request[i+1]);
+                if (is_member(stack, request[i+1]) == 1) printf("True\n");
+                else printf("False\n");
                 i++;
                 break;
             case 'F':
@@ -80,13 +83,15 @@ int main(){
             case 'L':
                 break;
             default:
-                for (int i = 0; i < request[i] - '0'; i++){
-                    if (request[i+1] == '-') pop(stack);
+                for (count = 0; count < request[i] - '0'; count++){
+                    printf("POPPED ELEMENT: %c\n", pop(stack)); 
                 }
                 i++;
                 break;
             }
             i++;
+        }
+    }
     free(stack);
     return 0;
 }
@@ -94,17 +99,17 @@ int main(){
 //functions specific
 void push(Stack* stack, char element){
     if (stack->top == MAX_NUM-1){
-        printf("THE STACK IS FULL!");
+        printf("THE STACK IS FULL!\n");
     }
     else {
         stack->top++;
-        stack->data[stack->top] = element
+        stack->data[stack->top] = element;
     }
 }
 
 char pop(Stack* stack){
     if (stack->top == -1){
-        printf("THE STACK IS EMPTY!");
+        printf("THE STACK IS EMPTY!\n");
     }
     else {
         stack->top--;
@@ -114,7 +119,7 @@ char pop(Stack* stack){
 
 char peek(Stack* stack){
     if (stack->top == -1){
-        printf("THE STACK IS EMPTY!");
+        printf("THE STACK IS EMPTY!\n");
     }
     else {
         return stack->data[stack->top];
@@ -122,37 +127,39 @@ char peek(Stack* stack){
 }
 
 void is_full(Stack* stack){
-    if (stack->top == MAX_NUM - 1) printf("True");
-    else printf("False");
+    if (stack->top == MAX_NUM - 1) printf("True\n");
+    else printf("False\n");
 }
 
 void element_count(Stack* stack){
-    if (stack->top == -1) printf("THE STACK IS EMPTY!");
-    else prinf("ELEMENT COUNT: %d", stack->top + 1);
+    if (stack->top == -1) printf("THE STACK IS EMPTY!\n");
+    else printf("ELEMENT COUNT: %d\n", stack->top + 1);
 }
 
 void top(Stack* stack){
-    if (stack->top == -1) printf("THE STACK IS EMPTY!");
-    else prinf("(%d, %c)", stack->top + 1, stack->data[stack->top]);
+    if (stack->top == -1) printf("THE STACK IS EMPTY!\n");
+    else printf("(%d, %c)\n", stack->top + 1, stack->data[stack->top]);
 }
 
-void is_member(Stack* stack, char element){
-    if (stack->top == -1) printf("THE STACK IS EMPTY!");
-    else {
-        Stack* stacktwo = (Stack*)malloc(sizeof(Stack));
-        stacktwo->top = -1;
-        for (int i = 0; i < stack->top; i++){
-            if (peek(stack) == element){
-                printf("True");
-                break;
-            }
-            else push(stacktwo, pop(stack));
-        }
-        while (stacktwo->top != -1){
-            push(stack, pop(stacktwo));
-        }
-        printf("False");
+int is_member(Stack* stack, char element){
+    int result = 0;
+    if (stack->top == -1){
+        printf("THE STACK IS EMPTY!\n");
+        return -1;
     }
+    Stack* stacktwo = (Stack*)malloc(sizeof(Stack));
+    stacktwo->top = -1;
+    while (stack->top != -1){
+        if (peek(stack) == element){
+            result = 1;
+            break;
+        }
+        else push(stacktwo, pop(stack));
+    }
+    while (stacktwo->top != -1){
+        push(stack, pop(stacktwo));
+    }
+    return result;
 }
 
 void replace(Stack* stack, char element){
@@ -160,23 +167,24 @@ void replace(Stack* stack, char element){
 }
 
 void clear(Stack* stack){
-    if (stack->top == -1) printf("THE STACK IS EMPTY!");
+    if (stack->top == -1) printf("THE STACK IS EMPTY!\n");
     while (stack->top != -1){
         pop(stack);
     }
+    printf("THE STACK IS CLEARED!\n");
 }
 
 void print_stack(Stack* stack){
     if (stack->top == -1) printf("THE STACK IS EMPTY!");
-    int num = stackt->top;
     else {
+        int num = stack->top;
         Stack* stacktwo = (Stack*)malloc(sizeof(Stack));
         stacktwo->top = -1;
-        for (int i = 0; i < stack->top; i++){
+        while (stack->top != -1){
             push(stacktwo, pop(stack));
         }
         while (stacktwo->top != -1){
-            popped = pop(stacktwo);
+            char popped = pop(stacktwo);
             if (stack->top == num - 1){
                 printf("[%c] ", popped);
             }
