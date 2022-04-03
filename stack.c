@@ -109,7 +109,8 @@ void push(Stack* stack, char element){
 
 char pop(Stack* stack){
     if (stack->top == -1){
-        printf("THE STACK IS EMPTY!\n");
+        printf("ERROR!\n");
+        return '~';
     }
     else {
         stack->top--;
@@ -225,5 +226,5 @@ void view(){
     printf("===SOME WARNINGS TO KEEP IN MIND===\n");
     printf("* SPACING between COMMANDS.\n");
     printf("* ONLY 1 element per 1 command.\n");
-    printf("* 5- means POP for 5 times.\n");
+    printf("* 5- means POP FOR 5 TIMES.\n");
 }
