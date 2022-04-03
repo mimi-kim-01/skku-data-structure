@@ -208,7 +208,7 @@ void lower(Stack* stack){
 }
 
 void view(){
-    printf("-----------------MENU-----------------");
+    printf("-----------------MENU-----------------\n");
     printf("PUSH                        | +(element)\n");
     printf("POP                         | -\n");
     printf("PEEK                        | P\n");

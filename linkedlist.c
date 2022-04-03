@@ -317,7 +317,7 @@ void lower(List* list){
 }
 
 void view(){
-    printf("-----------------MENU-----------------");
+    printf("-----------------MENU-----------------\n");
     printf("GET DATA                    | G\n");
     printf("TRAVERSE FRONT              | <\n");
     printf("TRAVERSE REAR               | >\n");
