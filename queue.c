@@ -19,10 +19,10 @@ void is_member(Queue* queue);
 void data_count(Queue* queue);
 void head(Queue* queue);
 void tail(Queue* queue);
-void replace(Queue* queue);
+void replace(Queue* queue, char data);
 void clear(Queue* queue);
-void upper(Queue* queue, int index);
-void lower(Queue* queue, int index);
+void upper(Queue* queue);
+void lower(Queue* queue);
 void print_queue(Queue* queue);
 void view();
 
@@ -30,6 +30,7 @@ void view();
 int main(){
     Queue* queue = (Queue*)malloc(sizeof(Queue));
     queue->head = -1; //initialize head
+    queue->tail = -1; //initialize tail
     view();
     while (1){
         print_queue(queue);
@@ -52,18 +53,33 @@ int main(){
 }
 
 //functions specific
-void enqueue(Queue* queue, char data);
-char dequeue(Queue* queue);
+void enqueue(Queue* queue, char data){
+    queue->tail++;
+}
+
+char dequeue(Queue* queue){
+    queue->head++;
+}
+
 char peek(Queue* queue);
 void is_full(Queue* queue);
 void is_empty(Queue* queue);
 void is_member(Queue* queue);
-void data_count(Queue* queue);
-void head(Queue* queue);
-void tail(Queue* queue);
-void replace(Queue* queue);
+void data_count(Queue* queue){
+    printf("%d", queue->tail - queue->head);
+}
+
+void head(Queue* queue){
+    printf("%d", queue->head+2);
+}
+
+void tail(Queue* queue){
+    printf("%d", queue->tail+1);
+}
+
+void replace(Queue* queue, char data);
 void clear(Queue* queue);
-void upper(Queue* queue, int index);
-void lower(Queue* queue, int index);
+void upper(Queue* queue);
+void lower(Queue* queue);
 void print_queue(Queue* queue);
 void view();
