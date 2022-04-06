@@ -53,7 +53,7 @@ int main(){
                 printf("DEQUEUED ELEMENT: %c\n", dequeue(queue));
                 break;
             case 'P':
-                printf("CURRENT TAIL: %c\n", peek(queue));
+                printf("CURRENT HEAD: %c\n", peek(queue));
                 break;
             case 'F':
                 if (is_full(queue) == 1) printf("True\n");
@@ -115,8 +115,8 @@ void enqueue(Queue* queue, char data){
         for (int i = queue->head + 1; i <= queue->tail; i++){
             queue->data[index] = queue->data[i];
             index++;
-            queue->head--;
         }
+        queue->head--;
         queue->data[queue->tail] = data;
         queue->num++;
     }
@@ -146,7 +146,7 @@ char peek(Queue* queue){
         printf("THE QUEUE IS EMPTY!");
         return 0;
     }
-    else return queue->data[queue->tail];
+    else return queue->data[queue->head+1];
 }
 
 int is_full(Queue* queue){
@@ -171,7 +171,7 @@ void is_member(Queue* queue, char data){
 
 void data_count(Queue* queue){
     if (queue->num == 0) printf("THE STACK IS EMPTY!\n");
-    else printf("DATA COUNT: %d\n", queue->tail - queue->head);
+    else printf("DATA COUNT: %d\n", queue->num);
 }
 
 void head(Queue* queue){
