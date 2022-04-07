@@ -40,7 +40,7 @@ class Queue:
         return 0
     
     def enqueue(self, data):
-        self.data[self.tail+1] = data
+        self.data.append(data)
         self.tail += 1
         self.num += 1
     
@@ -59,12 +59,6 @@ class Queue:
             return 0
         else: return self.data[self.head+1]
     
-    def head(self):
-        print("CURRENT HEAD:", self.head + 2)
-    
-    def tail(self):
-        print("CURRENT TAIL:", self.tail + 1)
-    
     def replace(self, newdata):
         self.data[self.tail] = newdata
     
@@ -77,6 +71,7 @@ class Queue:
     def print_queue(self):
         for i in range(self.num):
             print(self.data[self.head+i+1], end=' ')
+        print()
 
 #main
 queue = Queue()
@@ -93,7 +88,7 @@ while True:
             queue.enqueue(request[i+1])
             i += 1
         elif request[i] == '-':
-            queue.dequeue()
+            print("DEQUEUED ELEMENT:", queue.dequeue())
         elif request[i] == 'P':
             result = queue.peek()
             if result != 0: print("CURRENT HEAD:", result)
@@ -104,16 +99,16 @@ while True:
             if result == 1: print("True")
             else: print("False")
         elif request[i] == '?':
-            result = queue.is_member()
+            result = queue.is_member(request[i+1])
             if result == 1: print("True")
             else: print("False")
             i += 1
         elif request[i] == '#':
             queue.data_count()
         elif request[i] == 'H':
-            queue.head()
+            print("CURRENT HEAD:", queue.head + 2)
         elif request[i] == 'T':
-            queue.tail()
+            print("CURRENT TAIL:", queue.tail + 1)
         elif request[i] == '=':
             queue.replace(request[i+1])
             i += 1
@@ -121,15 +116,14 @@ while True:
             queue.__init__()
             print("THE QUEUE IS CLEARED!")
         elif request[i] == 'U':
-            queue.data[queue.tail].upper()
+            queue.data[queue.tail] = queue.data[queue.tail].upper()
         elif request[i] == 'D':
-            queue.data[queue.tail].lower()
+            queue.data[queue.tail] = queue.data[queue.tail].lower()
         elif request[i] == 'L':
             break
         elif request[i] == 'V':
             view()
         else:
-            for i in range(int(request[i]))):
-                queue.dequeue()
+            for i in range(int(request[i])):
+                print("DEQUEUED ELEMENT:", queue.dequeue())
         i += 2
-        
