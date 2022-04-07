@@ -111,10 +111,8 @@ int main(){
 void enqueue(Queue* queue, char data){
     if (is_full(queue) == 1) printf("THE QUEUE IS FULL!\n");
     else if (queue->tail == MAX_NUM - 1){
-        int index = 0;
-        for (int i = queue->head + 1; i <= queue->tail; i++){
-            queue->data[index] = queue->data[i];
-            index++;
+        for (int i = 0; i < queue->num; i++){
+            queue->data[queue->head+i] = queue->data[queue->head+i+1];
         }
         queue->head--;
         queue->data[queue->tail] = data;
