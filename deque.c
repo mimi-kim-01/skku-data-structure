@@ -208,14 +208,14 @@ void print_deque(Deque* deque){
 void view(){
     printf("-----------------MENU-----------------\n");
     printf("INITIALIZE DEQUE            | I\n");
-    printf("IS_EMPTY                    | E\n");
-    printf("IS_FULL                     | F\n");
-    printf("ADD_FRONT                   | H+(element)\n");
-    printf("DELETE_FRONT                | H-\n");
-    printf("GET_FRONT                   | HG\n");
-    printf("ADD_REAR                    | R+(element)\n");
-    printf("DELETE_REAR                 | R-\n");
-    printf("GET_REAR                    | RG\n");
+    printf("IS EMPTY                    | E\n");
+    printf("IS FULL                     | F\n");
+    printf("ADD FRONT                   | H+(element)\n");
+    printf("DELETE FRONT                | H-\n");
+    printf("GET FRONT                   | HG\n");
+    printf("ADD REAR                    | R+(element)\n");
+    printf("DELETE REAR                 | R-\n");
+    printf("GET REAR                    | RG\n");
     printf("VIEW MENU                   | V\n");
     printf("PRINT DEQUE                 | L\n");
     printf("QUIT                        | Q\n");
