@@ -10,6 +10,7 @@ def view():
     print("DATA COUNT                  | #")
     print("IS MEMBER                   | ?(data)")
     print("IS FULL                     | F") #dynamic, so never full
+    print("IS EMPTY                    | E")
     print("CLEAR QUEUE                 | C")
     print("TO UPPER CASE               | U")
     print("TO LOWER CASE               | D")

@@ -221,6 +221,7 @@ void view(){
     printf("DATA COUNT                  | #\n");
     printf("IS MEMBER                   | ?(data)\n");
     printf("IS FULL                     | F\n");
+    printf("IS EMPTY                    | E\n");
     printf("CLEAR QUEUE                 | C\n");
     printf("TO UPPER CASE               | U\n");
     printf("TO LOWER CASE               | D\n");
