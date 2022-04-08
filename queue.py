@@ -46,7 +46,7 @@ class Queue:
     
     def dequeue(self):
         if self.is_empty() == 1: 
-            print("NOTHING TO DEQUEUE")
+            print("NOTHING TO DEQUEUE!")
             return '~'
         dequeued = self.data[self.head+1]
         self.head += 1
