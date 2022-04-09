@@ -70,6 +70,7 @@ class Queue:
         else: print("DATA COUNT:", self.num)
     
     def print_queue(self):
+        if self.is_empty() == 1: print("THE QUEUE IS EMPTY!")
         for i in range(self.num):
             print(self.data[self.head+i+1], end=' ')
         print()

@@ -100,6 +100,8 @@ void init(Deque* deque){
     }
     free(clear);
     deque->front->next = NULL;
+    deque->front->data = NULL;
+    deque->front->prev = NULL;
     deque->len = 0;
     printf("THE DEQUE IS CLEARED!\n");
 }

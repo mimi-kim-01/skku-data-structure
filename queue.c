@@ -94,6 +94,7 @@ int main(){
                 break;
             case 'V':
                 view();
+                break;
             default:
                 for (count = 0; count < request[i] - '0'; count++){
                     printf("DEQUEUED ELEMENT: %c\n", dequeue(queue)); 
@@ -220,7 +221,7 @@ void view(){
     printf("REPLACE DATA                | =(data)\n");
     printf("DATA COUNT                  | #\n");
     printf("IS MEMBER                   | ?(data)\n");
-    printf("IS FULL                     | F\n");
+    printf("IS FULL                     | F\n"); 
     printf("IS EMPTY                    | E\n");
     printf("CLEAR QUEUE                 | C\n");
     printf("TO UPPER CASE               | U\n");
