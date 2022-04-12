@@ -29,6 +29,7 @@ int degree_of_node(Tree* tree, char node);
 int degree_of_tree(Tree* tree);
 int count_node(Tree* tree);
 void print_tree(Tree* tree);
+void join(Node* root, Tree* tree1, Tree* tree2);
 void clear(Tree* tree);
 void upper(Tree* tree, char node);
 void lower(Tree* tree, char node);
