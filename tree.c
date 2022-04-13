@@ -14,7 +14,7 @@ typedef struct Tree{
     int num;
 }Tree;
 
-//functions
+//functions //이진트리용 기능들도 쓰기? 아니 그리고 challenge과제 할거면 이진트리 자체 기능을 먼저 만들고, ??? 뭔소리임
 void insert_child(Tree* tree, Node* node, char child, int binary);
 void insert_sibling(Tree* tree, Node* node, char sibling, int binary);
 void delete_node(Tree* tree, char node);
