@@ -59,7 +59,9 @@ void create(Tree* tree, char root){
     tree->num++;
 }
 
-void insert_child(Tree* tree, Node* node, char child, int binary);
+void insert_child(Tree* tree, Node* node, char child, int binary){
+    
+}
 void insert_sibling(Tree* tree, Node* node, char sibling, int binary);
 void delete_node(Tree* tree, char node);
 void get_parent(Tree* tree, char node);
