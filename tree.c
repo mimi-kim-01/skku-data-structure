@@ -7,6 +7,8 @@ typedef struct Node{
     char data;
     struct Node* left;
     struct Node* right;
+    int degree;
+    int level;
 }Node;
 
 typedef struct Tree{
@@ -19,21 +21,8 @@ void create(Tree* tree, char root);
 void insert_child(Tree* tree, Node* node, char child, int binary);
 void insert_sibling(Tree* tree, Node* node, char sibling, int binary);
 void delete_node(Tree* tree, char node);
-void get_parent(Tree* tree, char node);
-void get_child(Tree* tree, char node);
-void get_sibling(Tree* tree, char node);
-void get_ancestors(Tree* tree, char node);
-void get_descendants(Tree* tree, char node);
-int level_of_node(Tree* tree, char node);
-int level_of_tree(Tree* tree);
-int degree_of_node(Tree* tree, char node);
-int degree_of_tree(Tree* tree);
-int count_node(Tree* tree);
-void print_tree(Tree* tree);
-void join(Node* root, Tree* tree1, Tree* tree2);
-void clear(Tree* tree);
-void upper(Tree* tree, char node);
-void lower(Tree* tree, char node);
+Node* search(Tree* tree, Node* node, char data);
+void print_tree(Tree* tree, Node* one, Node* two, int binary);
 void view();
 
 //main
@@ -43,7 +32,39 @@ int main(){
     tree->root = NULL;
     int binary;
     printf("CHOOSE YOUR TREE TYPE(1: BINARY, 0: TREE)\n>>> ");
-    scanf("%d", &binary);
+    scanf(" %d", &binary);
+    while (1){
+        print_tree(tree, tree->root, tree->root, binary);
+        char request[21] = {0};
+        printf("\n>>> ");
+        gets(request);
+        if (request[0] == 'Q'){
+            printf("THIS PROGRAM WILL END SOON!\n");
+            break;
+        }
+        for (int i = 0; i < strlen(request); i++){
+            switch (request[i]){
+            case '+':
+                if (strlen(request) == 2){
+                    create(tree, request[i+1]);
+                    i++;
+                }
+                else {
+                    Node* node = search(tree, tree->root, request[i+1]);
+                    if (node == NULL) {
+                        printf("%c IS NOT IN TREE", request[i+1]);
+                    }
+                    else{
+                        i += 3;
+                        while (request[i] != ')'){
+                            insert_child(tree, node, request[i], binary);
+                            i++;
+                        }
+                    }
+                }
+            }
+        }
+    }
 
 
     return 0;
@@ -60,31 +81,90 @@ void create(Tree* tree, char root){
 }
 
 void insert_child(Tree* tree, Node* node, char child, int binary){
-    
+    Node* new = (Node*)malloc(sizeof(Node));
+    if (binary){
+        if (node->left != NULL && node->right != NULL){
+            printf("CANNOT INSERT %c\n", child);
+        }
+        if (node->left == NULL){
+            node->left = new;
+        }
+        else if (node->right == NULL){
+            node->right = new;
+        }
+    }
+    else{
+        if (node->left == NULL) node->left = new;
+        else{
+            Node* crnt = node->left;
+            while (crnt->right != NULL){
+                crnt = crnt->right;
+            }
+            crnt->right = new;
+        }
+    }
+    new->data = child;
+    new->left = NULL;
+    new->right = NULL;
+    new->level = node->level + 1;
+    new->degree = 0;
+    tree->num++;
 }
-void insert_sibling(Tree* tree, Node* node, char sibling, int binary);
-void delete_node(Tree* tree, char node);
-void get_parent(Tree* tree, char node);
-void get_child(Tree* tree, char node);
-void get_sibling(Tree* tree, char node);
-void get_ancestors(Tree* tree, char node);
-void get_descendants(Tree* tree, char node);
-int level_of_node(Tree* tree, char node);
-int level_of_tree(Tree* tree);
-int degree_of_node(Tree* tree, char node);
-int degree_of_tree(Tree* tree);
-int count_node(Tree* tree);
-void print_tree(Tree* tree);
-void join(Node* root, Tree* tree1, Tree* tree2);
-void clear(Tree* tree);
-void upper(Tree* tree, char node);
-void lower(Tree* tree, char node);
+
+Node* search(Tree* tree, Node* node, char data){
+    if (node == NULL) return NULL;
+    if (node->data == data) return node;
+    Node* crnt = search(tree, node->left, data);
+    if (crnt != NULL) return crnt;
+    crnt = search(tree, node->right, data);
+    if (crnt != NULL) return crnt;
+    return NULL;
+}
+
+void print_tree(Tree* tree, Node* one, Node* two, int binary){
+    if (tree->num == 0) {
+        printf("EMPTY!\n");
+        return;
+    }
+    if (!binary){
+        Node* crnt = two->left;
+        if (one == two){
+            printf("%c", one->data);
+        }
+        if (one->left == NULL) return;
+        printf("(");
+        while(crnt != NULL){
+            printf("%c", crnt->data);
+            if (crnt->left != NULL) print_tree(tree, one, crnt, binary);
+            if (crnt->right != NULL) printf(",");
+            crnt = crnt->right;
+        }
+        printf(")");
+    }
+    else{
+        Node* crnt = one; // tmp 노드에 현재 주목하고 있는 노드 대입
+        if (crnt == tree->root){
+            printf("%c", crnt->data);
+        }
+        else {
+            printf("(%c", crnt->data);
+        }
+        if (crnt->left != NULL) print_tree(tree, crnt->left, two, binary);
+        if (crnt->right != NULL) {
+            crnt = crnt->right;
+            printf(",%c", crnt->data);
+            if (crnt->left != NULL) print_tree(tree, crnt->left, two, binary);
+            printf(")");
+        }
+    }
+    printf("\n");
+}
 
 void view(){
     printf("---------------------MENU---------------------\n");
     printf("CREATE                      | +(r)\n");
     printf("INSERT CHILD                | +p(c1, c2, ...))\n");
-    printf("INSERT SIBLING              | +n(s1, s2, ...))\n");
+    printf("INSERT SIBLING              | =+n(s1, s2, ...))\n");
     printf("DELETE NODE                 | -(n)\n");
     printf("GET PARENT                  | P(c)\n");
     printf("GET CHILD                   | C(p)\n");
