@@ -200,20 +200,20 @@ void insert_sibling(Tree* tree, Node* node, char sibling, int binary){
         return;
     }
     else if (crnt == tree->root){
-        printf("[%c] IS THE ROOT NODE!\n", sibling);
+        printf("[%c] IS THE ROOT NODE!\n", crnt->data);
         return;
     }
     crnt = crnt->parent;
     Node* sib = malloc(sizeof(Node));
-    sib->data = sibling;
     sib->parent = crnt;
-    sib->level = crnt->level + 1;
+    sib->level = crnt->level;
     if (!binary){
         crnt = crnt->left;
         while (crnt->right != NULL){
             crnt = crnt->right;
-            crnt->right = sib;
         }          
+        crnt->right = sib;
+        sib->level = crnt->level;
     }
     else{
         if (crnt->left == NULL){
@@ -227,10 +227,10 @@ void insert_sibling(Tree* tree, Node* node, char sibling, int binary){
             return;
         }
     }
+    sib->data = sibling;
     sib->left = NULL;
     sib->right = NULL;
     tree->num++;             
-    
 }
 
 void get_child(Tree* tree, char parent, int binary){
@@ -373,6 +373,7 @@ void get_descendants(Tree* tree, char node, int binary){
         return;
     }  
     Node* crnt = search(tree, tree->root, node);
+    Node* find = crnt;
     if (crnt == NULL){
         printf("[%c] IS NOT IN THE TREE!\n", node);
         return;
@@ -385,22 +386,29 @@ void get_descendants(Tree* tree, char node, int binary){
         if (!binary){
             crnt = crnt->left;
             printf("{%c", crnt->data);
-            while (crnt != NULL){
-                crnt = crnt->right;
+            while (crnt->left != NULL){
+                crnt = crnt->left;
                 printf(",%c", crnt->data);
+            }
+            Node* temp = crnt;
+            while (temp->right != NULL){
+                if (temp == find) break;
+                while (crnt->right != NULL){
+                    printf(",%c", crnt->right->data);
+                    crnt = crnt->right;
                 }
+                temp = temp->parent;
+                crnt = temp;
+            }
             printf("}\n");
             }    
         else {
             crnt = crnt->left;
             printf("{%c", crnt->data);            
-            while (crnt != NULL){
+            while (crnt->left != NULL){
                 crnt = crnt->left;
                 printf(",%c", crnt->data);
-            }
-            while (crnt != NULL){
-                crnt = crnt->right;
-                printf(",%c", crnt->data);
+                printf(",%c", crnt->parent->right->data);
             }
             printf("}\n");
         }
@@ -518,57 +526,59 @@ void delete_node(Tree* tree, char node, int binary){
         if (find->left != NULL || find->right != NULL){
             printf("CANNOT DELETE [%c]\n", find->data);
             return;
-        }
-        else {
-            if (find->parent->left == find){
-                if (find->parent->right == NULL){
-                    find->parent->left = NULL;
+            }
+        Node* crnt = find->parent;
+        if (find->left == NULL) {
+            if (crnt->left == find){
+                if (crnt->right == NULL){
+                    crnt->left = NULL;
+                    }
+                else {
+                    crnt->left = crnt->right;
+                    crnt->right = NULL;
+                    }
                 }
-                else find->parent->left = find->parent->right;
-            }
             else{
-                find->parent->right = NULL;
+                crnt->right = NULL;
             }
         }
-        free(find);
     }
     else{
-        Node* crnt = find->parent->left;
-        Node* first = crnt;
+        find = search(tree, tree->root, node);
+        Node* crnt = find->parent;
+        Node* prev;
+        Node* sib;
         if (find->degree != 0){
             printf("CANNOT DELETE [%c]\n", find->data);
             return;            
         }
-        if (crnt->left != NULL){
-            printf("CANNOT DELETE [%c]\n", find->data);
-            return;
-        }
-        else{
+        if (find->left == NULL){
             if (crnt->left == find){
                 if (crnt->right == NULL){
                     crnt->left = NULL;
+                    crnt->left = find->right;
                 }
                 else crnt->left = find->right;
-            }
+            }        
             else{
-                while (crnt->right != NULL){
-                    crnt = first;
-                    if (crnt->right == find){
-                        Node* del = crnt->right;
-                        first->right = del->right;
-                        free(del);
-                        break;
+                prev = crnt->left;
+                sib = prev;
+                while (1){
+                    sib = sib->right;
+                    if (sib->data == find->data) break;
+                    prev = prev->right; 
                     }
-                    crnt = crnt->right;
-                }
-                if (crnt == find){
-                    first->right = NULL;
-                    free(crnt);
+                if (find->right == NULL){
+                    prev->right = NULL;
+                    }
+                else {
+                    prev->right = find->right;
+                    }
                 }
             }
         }
-    }
     find->parent->degree--;
+    free(find);
     tree->num--;
 }
 
@@ -596,19 +606,20 @@ void print_tree(Tree* tree, Node* one, Node* two, int binary){
         }
     }
     else{
-        Node* crnt = two->left;
-        if (one == two){
-            printf("lv%d: %c\n", one->level, one->data);
-            }
-        if (one->left == NULL) return;
-        while (crnt != NULL){
-            printf("lv%d: %c\n", crnt->level, crnt->data);
-            print_tree(tree, two, crnt, binary);
-            if (two->right != NULL) {
-                printf("lv%d: %c\n", two->right->level, two->right->data);
-                print_tree(tree, two, two->right, binary);
+        Node* crnt = one;
+        printf("lv%d: %c\n", one->level, one->data);
+        if (one->left != NULL){
+            print_tree(tree, one->left, two, binary);
+        if (one->right != NULL){
+            while (1){
+                crnt = crnt->right;
+                printf("lv%d: %c\n", crnt->level, crnt->data);
+                if (crnt->left != NULL){
+                    print_tree(tree, crnt->left, two, binary);
+                    }
+                if (crnt->right == NULL) break;
                 }
-            crnt = crnt->right;
+            }
         }
     }
 }
@@ -672,11 +683,12 @@ void view(){
     printf("DEGREE OF TREE              | G\n");
     printf("COUNT NODE                  | #\n");
     printf("PRINT TREE                  | T\n");
-    printf("JOIN TREES                  | J(r, t1, t2)\n");
+    printf("JOIN TREES                  | J(r)\n");
     printf("CLEAR TREE                  | K\n");
     printf("QUIT                        | Q\n");
     printf("===SOME WARNINGS TO KEEP IN MIND===\n");
     printf("* p: PARENT, c: CHILD, s: SIBLING\n");
     printf("* t: TREE, r: ROOT, n: NODE\n");
-    printf("* No spacing between commands.\n");
+    printf("* 1. No spacing between commands.\n");
+    printf("* 2. Do not use brackets.\n");
 }
