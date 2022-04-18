@@ -690,5 +690,6 @@ void view(){
     printf("* p: PARENT, c: CHILD, s: SIBLING\n");
     printf("* t: TREE, r: ROOT, n: NODE\n");
     printf("* 1. No spacing between commands.\n");
-    printf("* 2. Do not use brackets.\n");
+    printf("* 2. Do not use commas.\n");
+    printf("* 3. Use brackets ONLY in INSERT fuctions.\n");
 }

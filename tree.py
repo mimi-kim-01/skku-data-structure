@@ -384,6 +384,7 @@ while True:
                 tree.root = root
                 tree.num += 1
                 i += 1
+                break
             elif request[i+2] == '(':
                 node = tree.search(tree.root, request[i+1])
                 if node is None:
@@ -393,38 +394,50 @@ while True:
                     while request[i] != ')':
                         tree.insert_child(node, request[i], bin)
                         i += 1
-
+                break
         elif request[i] == '-':
             tree.delete_node(request[i+1], bin)
+            break
         elif request[i] == '=':
             node = tree.search(tree.root, request[i+2])
             tree.insert_sibling(node, request[i+4], bin)
+            break
         elif request[i] == 'P':
             tree.get_parent(request[i+1])
+            break
         elif request[i] == 'C':
             tree.get_child(request[i+1], bin)
+            break
         elif request[i] == 'S':
             tree.get_sibling(request[i+1], bin)
+            break
         elif request[i] == 'A':
             tree.get_ancestors(request[i+1])
+            break
         elif request[i] == 'D':
             tree.get_descendants(request[i+1], bin)
+            break
         elif request[i] == 'L':
             if len(request) == 1:
                 print("LEVEL OF TREE IS %d" %(tree.level_of_tree(tree.root, tree.root)))
             else:
                 print("LEVEL OF NODE [%c] IS %d" %(request[i+1], tree.level_of_node(request[i+1])))
+            break
         elif request[i] == 'G':
             if len(request) == 1:
                 print("DEGREE OF TREE IS %d" %(tree.degree_of_tree(tree.root, tree.root)))
             else:
                 print("DEGREE OF NODE [%c] IS %d" %(request[i+1], tree.degree_of_node(request[i+1])))
+            break
         elif request[i] == '#':
             print("NODE COUNT: %d" %(tree.num))
+            break
         elif request[i] == 'T':
             break
         elif request[i] == 'J':
             tree.join_trees(request[i+1])
+            break
         elif request[i] == 'K':
-            tree.clear(tree.root)                        
+            tree.clear(tree.root)          
+            break              
     tree.print_tree(tree.root, tree.root, bin)
