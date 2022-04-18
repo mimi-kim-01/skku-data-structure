@@ -196,7 +196,7 @@ void insert_sibling(Tree* tree, Node* node, char sibling, int binary){
     }  
     Node* crnt = node;
     if (crnt == NULL){
-        printf("[%c] IS NOT IN THE TREE!\n", crnt->data);
+        printf("[%c] IS NOT IN THE TREE!\n", sibling);
         return;
     }
     else if (crnt == tree->root){
@@ -663,6 +663,8 @@ void join_trees(Tree* tree, char root){
     nroot->data = root;
     nroot->left = crnt;
     nroot->right = NULL;
+    nroot->level = 0;
+    nroot->degree = 1;
     level_up(crnt);
 }
 
