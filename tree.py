@@ -1,6 +1,10 @@
+from socket import CAN_RTR_FLAG
+
+
 class Node:
     def __init__(self, data):
         self.data = data
+        self.parent = None
         self.left = None
         self.right = None
         self.degree = 0
@@ -9,94 +13,121 @@ class Node:
 class Tree:
     def __init__(self):
         self.root = None
-        self.level = 0
-        self.degree = 0
         self.num = 0
-
-    def insert_child(self, parent, data):
-        new = Node(data)
-        if parent.left is None:
-            parent.left = new
-            new.level += 1
-        else:
-            crnt = parent.left
-            while crnt.right is not None:
-                crnt = crnt.right
-                new.level += 1
-            crnt.right = new
-        self.num += 1
-        parent.degree += 1
     
-    def insert_sibling(self, sibling, data):
+    def create(self, root):
+        root = Node(root)
+        tree = Tree()
+        tree.root = root
+        tree.num += 1
+        i += 1
+
+    def insert_child(self, node, data, bin):
         new = Node(data)
-        crnt = sibling
-        while crnt.right is not None:
-            crnt = crnt.right
-        crnt.right = new
+        if bin:
+            if node.left != None and node.right != None:
+                print("CANNOT INSERT [%c]" %(data))
+                return
+            if node.left is None:
+                node.left = new
+            elif node.right is None:
+                node.right = new
+        else:
+            if node.left is None:
+                node.left = new
+            else:
+                crnt = node.left
+                while crnt.right is not None:
+                    crnt = crnt.right
+                crnt.right = new
+        new.parent = node
+        new.level = node.level + 1
+        node.degree += 1
         self.num += 1
     
-    def delete_node(self, root, node):
-        if node.left is not None:
-            print(f"CANNOT DELETE {node.data}")
-            return 
-        parent = self.get_parent(root, node)
-        if node.right is None:
-            if parent.left == node:
-                parent.left = None
-            else: parent.right = None
-        else:
-            child = node.right
-            if parent.left == node:
-                parent.left = child
-            else: parent.right = child
-
-
-    def print_tree(self, one, two):
-        cnt = 0
+    def insert_sibling(self, node, data, bin):
         if self.num == 0:
             print("THE TREE IS EMPTY!")
             return
-        crnt = two.left
-        if one == two:
-            print(one.data, end = '')
-        if one.left is None: return None
-        while crnt is not None:
-            print(f"({crnt.data}", end='')
-            cnt += 1
-            if crnt.left is not None:
-                self.print_tree(one, crnt)
-            crnt = crnt.right
-        for i in range(cnt):
-            print(")", end='')
-        
-    def get_parent(self, root, node):
-        if root is None: return None
-        if root.left == node or root.right == node: return root
-        crnt = self.get_parent(root)
-        if crnt is not None: return crnt
-        return None
-    
-    def get_child(self, parent):
-        if parent.left is None:
-            print(f"{parent.data} HAS NO CHILD!")
-            return 
-        crnt = parent.left
-        while crnt is not None:
-            print(crnt.data, end='')
-            crnt = crnt.right
-        print()
-    
-    def get_sibling(self, root, node):
-        crnt = self.get_parent(root, node)
+        crnt = node
         if crnt is None:
-            print(f"{node.data} DOES NOT HAVE ANY SIBLING!")
+            print("[%c] IS NOT IN THE TREE!" %(crnt.data))
             return
-        crnt = crnt.left
-        while crnt is not None:
-            if node.data != crnt.data:
-                print(crnt.data, end='')
-            crnt = crnt.right
-        print()
+        elif crnt == self.root:
+            print("[%c] IS THE ROOT NODE!" %(crnt.data))
+            return
+        crnt = crnt.parent
+        sib = Node(data)
+        sib.parent = crnt
+        sib.level = crnt.level + 1
+        if bin == 0:
+            crnt = crnt.left
+            while crnt.right is not None:
+                crnt = crnt.right
+                crnt.right = sib
+        else:
+            if crnt.left is None:
+                crnt.left = sib
+            elif crnt.right is None:
+                crnt.right = sib
+            else:
+                print("CANNOT INSERT [%c]" %(data))
+                return
+        self.num += 1 
+    
+    def get_child(self, parent, bin):
+        if self.num:
+            print("THE TREE IS EMPTY!")
+            return
+        crnt = self.search(self.root, parent)
+        if crnt is None:
+            print("[%c] IS NOT IN THE TREE!" %(parent))
+            return
+        if crnt.data == parent:
+            if crnt.left is None:
+                print("[%c] DOES NOT HAVE CHILD!" %(parent))
+                return
+            if bin == 0:
+                crnt = crnt.left
+                print("{%c" %(crnt.data), end = '')
+                while True:
+                    if crnt.right is None: break
+                    crnt = crnt.right
+                    print(",%c" %(crnt.data), end = '')
+            else:
+                temp = crnt.left
+                print("{%c" %(temp.data), end = '')
+                if crnt.right is not None:
+                    crnt = crnt.right
+                    print(",%c" %(crnt.data), end = '')
+            print("}")
+
+    def get_parent(self, child):
+        if self.num == 0:
+            print("THE TREE IS EMPTY!")
+            return
+        crnt = self.search(self.root, child)
+        if crnt is None:
+            print("[%c] IS NOT IN THE TREE!" %(child))
+            return
+        if crnt.data == child:
+            if crnt.parent is None:
+                print("[%c] IS THE ROOT NODE!" %(child))
+                return
+            print("[%c] IS THE PARENT NODE OF [%c]" %(crnt.parent.data, child))
+    
+    def get_sibling(self, sib, bin):
+        if self.num == 0:
+            print("THE TREE IS EMPTY!")
+            return
+        idx = 0
+        crnt = self.search(self.root, sib)
+        if crnt is None:
+            print("[%c] IS NOT IN THE TREE!" %(sib))
+            return
+        elif crnt == self.root:
+            
+
     
     def search(self, node, data):
         if node is None: return None
@@ -129,8 +160,11 @@ class Tree:
                 self.degree = self.degree_of_node(root, node)
         return self.degree
 
+def view():
+    print("이따가 수정하기")
+
+bin = int(input("CHOOSE YOUR TREE TYPE(0: GENERAL, 1: BINARY)\n>>> "))
 while True:
-    bin = int(input("1:binary, 0:general: "))
     request = input(">>> ")
     if request[0] == 'Q':
         print("THIS PROGRAM ENDS SOON")
@@ -148,13 +182,7 @@ while True:
                 if node is None:
                     print(f"{request[i+1]} IS NOT IN TREE!")
                 else:
-                    i += 3
-                    tree.insert_child(node, request[i])
-                    i += 1
-                    while request[i] != ')':
-                        find = tree.search(tree.root, request[i-1])
-                        tree.insert_sibling(find, request[i])
-                        i += 1
+                    print()
                        
 
 
