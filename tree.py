@@ -43,7 +43,7 @@ class Tree:
             return
         crnt = node
         if crnt is None:
-            print("[%c] IS NOT IN THE TREE!" %(crnt.data))
+            print("[%c] IS NOT IN THE TREE!" %(data))
             return
         elif crnt == self.root:
             print("[%c] IS THE ROOT NODE!" %(crnt.data))
@@ -194,7 +194,6 @@ class Tree:
                         crnt = crnt.right
                     temp = temp.parent
                     crnt = temp
-                print("}")
             else:
                 crnt = crnt.left
                 print("{%c" %(crnt.data), end = '')
@@ -367,7 +366,8 @@ def view():
     print("* p: PARENT, c: CHILD, s: SIBLING")
     print("* t: TREE, r: ROOT, n: NODE")
     print("* 1. No spacing between commands.")
-    print("* 2. Do not use brackets.")
+    print("* 2. Do not use commas.")
+    print("* 3. Use brackets ONLY in INSERT fuctions.")
 
 bin = int(input("CHOOSE YOUR TREE TYPE(0: GENERAL, 1: BINARY)\n>>> "))
 view()
