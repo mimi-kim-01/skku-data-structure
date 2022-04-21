@@ -25,11 +25,31 @@ void count_node(Node* root);
 void delete_node(Node* root, int value);
 void print_bst(Node* root);
 void clear(Node* root);
+void view();
 
 //main
 int main(){
     Node* root = (Node*)malloc(sizeof(Node));
-
+    view();
+    while (1){
+        char request[21] = {0};
+        if (num == 0){
+            printf("THE BST IS EMPTY!\n");
+        }
+        else print_bst(root);
+        printf("\n>>> ");
+        gets(request);
+        if (request[0] == 'Q'){
+            printf("THIS PROGRAM WILL END SOON!\n");
+            break;
+        }
+        for (int i = 0; i < strlen(request); i++){
+            switch (request[i]){
+            case '+':
+                printf("not yet");
+            }
+        }
+    }
 
     free(root);
     return 0;
@@ -100,3 +120,4 @@ void count_node(Node* root){
 void delete_node(Node* root, int value);
 void print_bst(Node* root);
 void clear(Node* root);
+void view();
