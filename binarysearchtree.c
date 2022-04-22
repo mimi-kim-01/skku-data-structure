@@ -31,13 +31,13 @@ void view();
 //main
 int main(){
     Node* root = (Node*)malloc(sizeof(Node));
-    view();
+    //view();
     while (1){
         char request[21] = {0};
         if (num == 0){
             printf("THE BST IS EMPTY!\n");
         }
-        else print_bst(root);
+        //else print_bst(root);
         printf("\n>>> ");
         gets(request);
         if (request[0] == 'Q'){
@@ -47,7 +47,8 @@ int main(){
         for (int i = 0; i < strlen(request); i++){
             switch (request[i]){
             case '+':
-                printf("not yet");
+                insert_node(root, request[i+1]);
+                break;
             }
         }
     }
@@ -58,14 +59,15 @@ int main(){
 
 //functions specific
 void insert_node(Node* root, int value){
-    if (num == 0) {
-        printf("THE BST IS EMPTY!\n");
-        return;
-    }
     Node* new = (Node*)malloc(sizeof(Node));
     new->value = value;
     new->left = NULL;
     new->right = NULL;
+    if (num == 0){
+        new = root;
+        num++;
+        return;
+    }
     if (root->value < value){
         if (root->right == NULL){
             root->right = new;
