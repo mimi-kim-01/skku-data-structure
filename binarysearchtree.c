@@ -19,6 +19,7 @@ int get_min(Node* root);
 int get_max(Node* root);
 int height(Node* bst);
 Node* find_node(Node* node, int value);
+Node* search(Node* node, int value);
 Node* get_right_child(Node* root, int value);
 Node* get_left_child(Node* root, int value);
 void count_node(Node* root);
@@ -85,18 +86,61 @@ void insert_node(Node* root, int value){
     }
 }
 
-void inorder_traversal(Node* root);
-void right_root_left_traversal(Node* root);
-int get_min(Node* root);
-int get_max(Node* root);
+void inorder_traversal(Node* root){
+    if (root->left != NULL) inorder_traversal(root->left);
+    printf("%c ", root->value);
+    if (root->right != NULL) inorder_traversal(root->right);
+}
+
+void right_root_left_traversal(Node* root){
+    if (root->right != NULL) right_root_left_traversal(root->right);
+    printf("%c ", root->value);
+    if (root->left != NULL) right_root_left_traversal(root->left);
+}
+
+int get_min(Node* root){
+    Node* crnt = root;
+    int min = crnt->value;
+    while (crnt->left != NULL){
+        crnt = crnt->left;
+        min = crnt->value;
+    }
+    return min;
+}
+
+int get_max(Node* root){
+    Node* crnt = root;
+    int max = crnt->value;
+    while (crnt->right != NULL){
+        crnt = crnt->right;
+        max = crnt->value;
+    }    
+    return max;
+}
+
 int height(Node* bst);
 
 Node* find_node(Node* node, int value){
     if (node == NULL) return NULL;
+    printf("ROOT->");
     if (node->value == value) return node;
-    Node* crnt = find(node->left, value);
+    if (node->value > value){
+        printf("LEFT->");
+        return find_node(node->left, value);
+    }
+    if (node->value < value){
+        printf("RIGHT->");
+        return find_node(node->right, value);
+    }
+    return NULL;
+}
+
+Node* search_node(Node* node, int value){
+    if (node == NULL) return NULL;
+    if (node->value == value) return node;
+    Node* crnt = search_node(node->left, value);
     if (crnt != NULL) return crnt;
-    crnt = find(node->right, value);
+    crnt = search_node(node->right, value);
     if (crnt != NULL) return crnt;
     return NULL;
 }
