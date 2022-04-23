@@ -24,7 +24,7 @@ Node* get_right_child(Node* root, int value);
 Node* get_left_child(Node* root, int value);
 void count_node(Node* root);
 void delete_node(Node* root, int value);
-void print_bst(Node* root);
+void print_bst(Node* one, Node* two);
 void clear(Node* root);
 void view();
 
@@ -37,7 +37,7 @@ int main(){
         if (num == 0){
             printf("THE BST IS EMPTY!\n");
         }
-        //else print_bst(root);
+        else print_bst(root, root);
         printf("\n>>> ");
         gets(request);
         if (request[0] == 'Q'){
@@ -47,8 +47,44 @@ int main(){
         for (int i = 0; i < strlen(request); i++){
             switch (request[i]){
             case '+':
-                insert_node(root, request[i+1]);
+                insert_node(root, request[i+1] - '0');
                 break;
+            /*
+            case '-':
+                delete_node(root, request[i+1] - '0');
+                break;
+*/
+            case 'I':
+                inorder_traversal(root);
+                break;
+            case 'R':
+                right_root_left_traversal(root);
+                break;
+            case 'N':
+                get_min(root);
+                break;
+            case 'X':
+                get_max(root);
+                break;
+            case 'F':
+                find_node(root, request[i+1] - '0');
+                break;
+            case 'H':
+                height(root);
+                break;
+            case 'G':
+                get_right_child(root, request[i+1] - '0');
+                break;
+            case 'L':
+                get_left_child(root, request[i+1] - '0');
+                break;                
+            case '#':
+                count_node(root);
+                break;
+            case 'P':
+                break;
+            case 'C':
+                clear(root);
             }
         }
     }
@@ -65,6 +101,7 @@ void insert_node(Node* root, int value){
     new->right = NULL;
     if (num == 0){
         new = root;
+        root->value = value;
         num++;
         return;
     }
@@ -120,7 +157,9 @@ int get_max(Node* root){
     return max;
 }
 
-int height(Node* bst);
+int height(Node* bst){
+    printf("height!");
+}
 
 Node* find_node(Node* node, int value){
     if (node == NULL) return NULL;
@@ -163,7 +202,72 @@ void count_node(Node* root){
     printf("NODE COUNT: %d\n", num);
 }
 
-void delete_node(Node* root, int value);
-void print_bst(Node* root);
-void clear(Node* root);
-void view();
+/* void delete_node(Node* root, int value){
+    Node* del = search_node(root, value);
+    if (del == NULL) {
+        printf("[%c] DOES NOT EXIST!\n", value);
+        return;
+    }
+    if (del->left == NULL && del->right == NULL){
+        root->value = '\0';
+    }
+    else if (del->left == NULL || del->right == NULL){
+        if (del->left != NULL){
+            root = root->left;
+        }
+        else root = root->right;
+        free(del);        
+    }
+    else{
+        
+    }
+}
+*/
+
+void print_bst(Node* one, Node* two){
+    if (one == two) printf("%d", one->value);
+    Node* crnt = two->left;
+    if (two->left != NULL) {
+        printf("(%d", crnt->value);
+        print_bst(one, crnt);
+        if (two->right != NULL){
+            printf(",%d", crnt->right->value);
+            print_bst(one, two->right);
+            printf(")");
+        }
+        else printf(",)");
+    }
+    else if (two->right != NULL){
+        printf("(,%d", two->right->value);
+        print_bst(one, two->right);
+        printf(")");
+    }
+}
+
+void clear(Node* root){
+    root->value = '\0';
+    root->left = NULL;
+    root->right = NULL;
+    num = 0;
+}
+
+void view(){
+    printf("---------------------MENU---------------------\n");
+    printf("CREATE                      | +(n)\n");
+    printf("INSERT NODE                 | +(n)\n");
+    printf("DELETE NODE                 | -(n)\n");
+    printf("INORDER TRAVERSE            | I\n");
+    printf("RIGHT ROOT LEFT TRAVERSE    | R\n");
+    printf("GET MIN                     | N\n");
+    printf("GET MAX                     | X\n");
+    printf("FIND NODE                   | F(n)\n");
+    printf("HEIGHT                      | H\n"); 
+    printf("GET RIGHT CHILD             | G(n)\n");
+    printf("GET LEFT CHILD              | L(n)\n");
+    printf("COUNT NODE                  | #\n");
+    printf("PRINT BST                   | P\n");
+    printf("CLEAR BST                   | C\n");
+    printf("QUIT                        | Q\n");
+    printf("===SOME WARNINGS TO KEEP IN MIND===\n");    
+    printf("* 1. 주의문구넣기!!");
+}
