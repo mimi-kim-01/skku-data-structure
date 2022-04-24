@@ -18,12 +18,13 @@ void right_root_left_traversal(Node* root);
 int get_min(Node* root);
 int get_max(Node* root);
 int height(Node* bst);
+int degree_of_node(Node* root, int value);
 Node* find_node(Node* node, int value);
-Node* search(Node* node, int value);
+Node* search_node(Node* node, int value);
 Node* get_right_child(Node* root, int value);
 Node* get_left_child(Node* root, int value);
 void count_node(Node* root);
-void delete_node(Node* root, int value);
+Node* delete_node(Node* root, int value);
 void print_bst(Node* one, Node* two);
 int get_value(char request[21]);
 void clear(Node* root);
@@ -50,11 +51,10 @@ int main(){
             case '+':
                 insert_node(root, get_value(request));
                 break;
-            /*
             case '-':
+                if (search_node(root, get_value(request)) != NULL) num--;
                 delete_node(root, get_value(request));
                 break;
-*/
             case 'I':
                 inorder_traversal(root);
                 printf("\n");
@@ -70,16 +70,20 @@ int main(){
                 printf("MAX: %d\n", get_max(root));
                 break;
             case 'F':
+                if (search_node(root, get_value(request)) != NULL) printf("ROOT");
                 find_node(root, get_value(request));
+                printf("\n");
                 break;
             case 'H':
-                height(root);
+                printf("HEIGHT: %d\n", height(root) - 1);
                 break;
             case 'G':
-                printf("RIGHT CHILD OF [%d]: %d\n", get_value(request), get_right_child(root, get_value(request))->value);
+                if (get_right_child(root, get_value(request)) == NULL) printf("ERROR!\n");
+                else printf("RIGHT CHILD OF [%d]: %d\n", get_value(request), get_right_child(root, get_value(request))->value);
                 break;
             case 'L':
-                printf("LEFT CHILD OF [%d]: %d\n", get_value(request), get_left_child(root, get_value(request))->value);
+                if (get_left_child(root, get_value(request)) == NULL) printf("ERROR!\n");
+                else printf("LEFT CHILD OF [%d]: %d\n", get_value(request), get_left_child(root, get_value(request))->value);
                 break;                
             case '#':
                 count_node(root);
@@ -129,13 +133,13 @@ void insert_node(Node* root, int value){
 
 void inorder_traversal(Node* root){
     if (root->left != NULL) inorder_traversal(root->left);
-    printf("%c ", root->value);
+    printf("%d ", root->value);
     if (root->right != NULL) inorder_traversal(root->right);
 }
 
 void right_root_left_traversal(Node* root){
     if (root->right != NULL) right_root_left_traversal(root->right);
-    printf("%c ", root->value);
+    printf("%d ", root->value);
     if (root->left != NULL) right_root_left_traversal(root->left);
 }
 
@@ -159,22 +163,37 @@ int get_max(Node* root){
     return max;
 }
 
-int height(Node* bst){
-    printf("height!");
+int height(Node* root){
+    if (root == NULL) return 0;
+    int l = height(root->left);
+    int r = height(root->right);
+    if (l > r) return l + 1;
+	else return r + 1;
+}
+
+int degree_of_node(Node* root, int value){
+    Node* crnt = search_node(root, value);
+    if (crnt == NULL) return -1;
+    if (crnt->left == NULL && crnt->right == NULL) return 0;
+    else if (crnt->left == NULL || crnt->right == NULL) return 1;
+    else return 2;
 }
 
 Node* find_node(Node* node, int value){
     if (node == NULL) return NULL;
+    if (search_node(node, value) == NULL) {
+        printf("NOT FOUND!");
+        return NULL;
+    }
     if (node->value == value) {
-        printf("ROOT->");
         return node;
         }
     if (node->value > value){
-        printf("LEFT->");
+        printf("->LEFT");
         return find_node(node->left, value);
     }
     if (node->value < value){
-        printf("RIGHT->");
+        printf("->RIGHT");
         return find_node(node->right, value);
     }
     return NULL;
@@ -206,27 +225,33 @@ void count_node(Node* root){
     printf("NODE COUNT: %d\n", num);
 }
 
-/* void delete_node(Node* root, int value){
-    Node* del = search_node(root, value);
-    if (del == NULL) {
-        printf("[%c] DOES NOT EXIST!\n", value);
-        return;
+Node* delete_node(Node* root, int value){
+    Node* del = NULL;
+    if (root == NULL){
+        printf("THE BST IS EMPTY!\n");
+        return NULL;
     }
-    if (del->left == NULL && del->right == NULL){
-        root->value = '\0';
+    if (root->value > value){
+        root->left = delete_node(root->left, value);
     }
-    else if (del->left == NULL || del->right == NULL){
-        if (del->left != NULL){
-            root = root->left;
-        }
-        else root = root->right;
-        free(del);        
+    else if (root->value < value){
+        root->right = delete_node(root->right, value);
     }
     else{
-        
+        if (degree_of_node(root, root->value) == 2){
+            del = search_node(root, get_max(root->left));
+            root->value = del->value;
+            root->left = delete_node(root->left, del->value);
+        }
+        else{
+            if (root->left == NULL) del = root->right;
+            else del = root->left;
+            free(root);
+            return del;
+        }
     }
+    return root;
 }
-*/
 
 void print_bst(Node* one, Node* two){
     if (one == two) printf("%d", one->value);
