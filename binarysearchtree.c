@@ -1,12 +1,19 @@
+/*
+1. menu 수정
+2. child 없는 경우 error 출력하는 거 왜 안돼?
+3. delete root할 때 오류
+    */
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 //binary search tree
-typedef struct Node{
+typedef struct node{
     int value;
-    struct Node* left;
-    struct Node* right;
+    struct node* left;
+    struct node* right;
 }Node;
 
 int num = 0;
