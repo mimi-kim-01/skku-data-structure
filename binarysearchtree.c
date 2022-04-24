@@ -52,32 +52,34 @@ int main(){
                 break;
             /*
             case '-':
-                delete_node(root, request[i+1] - '0');
+                delete_node(root, get_value(request));
                 break;
 */
             case 'I':
                 inorder_traversal(root);
+                printf("\n");
                 break;
             case 'R':
                 right_root_left_traversal(root);
+                printf("\n");
                 break;
             case 'N':
-                get_min(root);
+                printf("MIN: %d\n", get_min(root));
                 break;
             case 'X':
-                get_max(root);
+                printf("MAX: %d\n", get_max(root));
                 break;
             case 'F':
-                find_node(root, request[i+1] - '0');
+                find_node(root, get_value(request));
                 break;
             case 'H':
                 height(root);
                 break;
             case 'G':
-                get_right_child(root, request[i+1] - '0');
+                printf("RIGHT CHILD OF [%d]: %d\n", get_value(request), get_right_child(root, get_value(request))->value);
                 break;
             case 'L':
-                get_left_child(root, request[i+1] - '0');
+                printf("LEFT CHILD OF [%d]: %d\n", get_value(request), get_left_child(root, get_value(request))->value);
                 break;                
             case '#':
                 count_node(root);
@@ -89,7 +91,6 @@ int main(){
             }
         }
     }
-
     free(root);
     return 0;
 }
@@ -164,8 +165,10 @@ int height(Node* bst){
 
 Node* find_node(Node* node, int value){
     if (node == NULL) return NULL;
-    printf("ROOT->");
-    if (node->value == value) return node;
+    if (node->value == value) {
+        printf("ROOT->");
+        return node;
+        }
     if (node->value > value){
         printf("LEFT->");
         return find_node(node->left, value);
@@ -232,7 +235,7 @@ void print_bst(Node* one, Node* two){
         printf("(%d", crnt->value);
         print_bst(one, crnt);
         if (two->right != NULL){
-            printf(",%d", crnt->right->value);
+            printf(",%d", two->right->value);
             print_bst(one, two->right);
             printf(")");
         }
@@ -280,3 +283,4 @@ void view(){
     printf("===SOME WARNINGS TO KEEP IN MIND===\n");    
     printf("* 1. 주의문구넣기!!");
 }
+
