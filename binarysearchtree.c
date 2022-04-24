@@ -25,6 +25,7 @@ Node* get_left_child(Node* root, int value);
 void count_node(Node* root);
 void delete_node(Node* root, int value);
 void print_bst(Node* one, Node* two);
+int get_value(char request[21]);
 void clear(Node* root);
 void view();
 
@@ -47,7 +48,7 @@ int main(){
         for (int i = 0; i < strlen(request); i++){
             switch (request[i]){
             case '+':
-                insert_node(root, request[i+1] - '0');
+                insert_node(root, get_value(request));
                 break;
             /*
             case '-':
@@ -249,6 +250,14 @@ void clear(Node* root){
     root->left = NULL;
     root->right = NULL;
     num = 0;
+}
+
+int get_value(char request[21]){
+    int value = 0;
+    char number[20] = {0};
+    strncpy(number,request+1,20);
+    value = atoi(number);
+    return value;
 }
 
 void view(){
