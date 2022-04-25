@@ -1,8 +1,3 @@
-/*
-1. 그 max heap 출력 방식 바꿔보기,,,
-2. 코드 좀 수정!!
-    */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -31,28 +26,33 @@ int num = 0;
 void insert_max_heap(Heap* heap, Element value);
 void insert_node(Node* root, int value);
 void print_bst(Node* one, Node* two);
+
 //main
 int main() {
     Heap heap;
     Node* root = (Node*)malloc(sizeof(Node));
     heap.num = 0;
     while (1) {
-        printf("INPUT (negative number to stop): ");
+        printf("INPUT (-1 to stop): ");
         Element request;
         scanf("%d", &(request.key));
-        if (request.key < 0) {
-            printf("\nEND INSERT && CHANGE TO BST\n");
+        if (request.key == -1) {
+            printf("\n<<< END INSERT && CHANGE TO BST >>>\n");
             break;
         }
         insert_max_heap(&heap, request);
     }
     printf("\nMAX HEAP: ");
+    insert_node(root, heap.heap[heap.num/2].key);
     for (int i = 1; i <= heap.num; i++) {
         printf("%d ", heap.heap[i].key);
-        insert_node(root, heap.heap[i].key);
+        if (i != heap.num/2) {
+            insert_node(root, heap.heap[i].key);
+            }
     }
     printf("\n\nBINARY SEARCH TREE: ");
     print_bst(root, root);
+    printf("\n");
     free(root);
     return 0;
 }
@@ -65,11 +65,11 @@ void insert_max_heap(Heap* heap, Element value) {
     i = heap->num; 
     heap->heap[i].key = value.key; 
     while (i > 1) {
-        if (heap->heap[i / 2].key < heap->heap[i].key) {
+        if (heap->heap[i/2].key < heap->heap[i].key) {
             crnt = heap->heap[i].key;
-            heap->heap[i].key = heap->heap[i / 2].key;
-            heap->heap[i / 2].key = crnt;
-            i = i / 2;
+            heap->heap[i].key = heap->heap[i/2].key;
+            heap->heap[i/2].key = crnt;
+            i = i/2;
         }
         else break;
     }
