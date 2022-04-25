@@ -1,10 +1,3 @@
-/*
-1. menu 수정
-2. child 없는 경우 error 출력하는 거 왜 안돼?
-3. delete root할 때 오류
-    */
-
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -28,8 +21,8 @@ int height(Node* bst);
 int degree_of_node(Node* root, int value);
 Node* find_node(Node* node, int value);
 Node* search_node(Node* node, int value);
-Node* get_right_child(Node* root, int value);
-Node* get_left_child(Node* root, int value);
+void get_right_child(Node* root, int value);
+void get_left_child(Node* root, int value);
 void count_node(Node* root);
 Node* delete_node(Node* root, int value);
 void print_bst(Node* one, Node* two);
@@ -60,7 +53,7 @@ int main(){
                 break;
             case '-':
                 if (search_node(root, get_value(request)) != NULL) num--;
-                delete_node(root, get_value(request));
+                root = delete_node(root, get_value(request));
                 break;
             case 'I':
                 inorder_traversal(root);
@@ -85,12 +78,10 @@ int main(){
                 printf("HEIGHT: %d\n", height(root) - 1);
                 break;
             case 'G':
-                if (get_right_child(root, get_value(request)) == NULL) printf("ERROR!\n");
-                else printf("RIGHT CHILD OF [%d]: %d\n", get_value(request), get_right_child(root, get_value(request))->value);
+                get_right_child(root, get_value(request));
                 break;
             case 'L':
-                if (get_left_child(root, get_value(request)) == NULL) printf("ERROR!\n");
-                else printf("LEFT CHILD OF [%d]: %d\n", get_value(request), get_left_child(root, get_value(request))->value);
+                get_left_child(root, get_value(request));
                 break;                
             case '#':
                 count_node(root);
@@ -216,16 +207,28 @@ Node* search_node(Node* node, int value){
     return NULL;
 }
 
-Node* get_right_child(Node* root, int value){
-    if (root == NULL) return NULL;
-    if (root->right == NULL) return NULL;
-    return root->right;
+void get_right_child(Node* root, int value){
+    if (root == NULL) {
+        printf("THE BST DOES NOT EXIST!\n");
+        return;
+        }
+    if (root->right == NULL) {
+        printf("[%d] DOES NOT HAVE RIGHT CHILD!\n", value);
+        return;
+        }
+    printf("RIGHT CHILD OF [%d]: %d\n", value, root->right->value);
 }
 
-Node* get_left_child(Node* root, int value){
-    if (root == NULL) return NULL;
-    if (root->left == NULL) return NULL;
-    return root->left;
+void get_left_child(Node* root, int value){
+    if (root == NULL) {
+        printf("THE BST DOES NOT EXIST!\n");
+        return;
+        }
+    if (root->right == NULL) {
+        printf("[%d] DOES NOT HAVE LEFT CHILD!\n", value);
+        return;
+        }
+    printf("LEFT CHILD OF [%d]: %d\n", value, root->left->value);
 }
 
 void count_node(Node* root){
@@ -313,6 +316,6 @@ void view(){
     printf("CLEAR BST                   | C\n");
     printf("QUIT                        | Q\n");
     printf("===SOME WARNINGS TO KEEP IN MIND===\n");    
-    printf("* 1. 주의문구넣기!!");
+    printf("* 1. Do not use brackets.\n");
+    printf("* 2. No spacing between commands.\n");
 }
-
