@@ -33,7 +33,7 @@ void view();
 //main
 int main(){
     Node* root = (Node*)malloc(sizeof(Node));
-    //view();
+    view();
     while (1){
         char request[21] = {0};
         if (num == 0){
@@ -90,6 +90,10 @@ int main(){
                 break;
             case 'C':
                 clear(root);
+                break;
+            case 'V':
+                view();
+                break;
             }
         }
     }
@@ -224,7 +228,7 @@ void get_left_child(Node* root, int value){
         printf("THE BST DOES NOT EXIST!\n");
         return;
         }
-    if (root->right == NULL) {
+    if (root->left == NULL) {
         printf("[%d] DOES NOT HAVE LEFT CHILD!\n", value);
         return;
         }
@@ -315,7 +319,8 @@ void view(){
     printf("PRINT BST                   | P\n");
     printf("CLEAR BST                   | C\n");
     printf("QUIT                        | Q\n");
+    printf("VIEW MENU                   | V\n");
     printf("===SOME WARNINGS TO KEEP IN MIND===\n");    
     printf("* 1. Do not use brackets.\n");
-    printf("* 2. No spacing between commands.\n");
+    printf("* 2. No spacing between commands.\n\n");
 }
