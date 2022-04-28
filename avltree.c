@@ -25,6 +25,27 @@ int main(){
 }
 
 //functions specific
-Node* Lrotate(Node* z){
-    Node* y = 
+Node* LLrotate(Node* c){
+    Node* b = c->right;
+    Node* a = b->left;
+    b->left = c;
+    c->right = a;
+    return b;
+}
+
+Node* RRrotate(Node* c){
+    Node* b = c->left;
+    Node* a = b->right;
+    b->right = c;
+    c->left = a;
+    return b;
+}
+
+Node* LRrotate(Node* c){
+    c = RRrotate(c->left);
+    return LLrotate(c);
+}
+
+Node* RLrotate(Node* c){
+    c = LLrotate
 }
