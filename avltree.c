@@ -3,7 +3,7 @@
 
 //avl tree
 typedef struct Node{
-    char data;
+    int value;
     struct Node* left;
     struct Node* right;
     struct Node* parent;
@@ -25,3 +25,6 @@ int main(){
 }
 
 //functions specific
+Node* Lrotate(Node* z){
+    Node* y = 
+}
