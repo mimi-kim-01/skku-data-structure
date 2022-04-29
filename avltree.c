@@ -7,15 +7,15 @@ typedef struct Node {
     int value;
     struct Node* left;
     struct Node* right;
-    int degree;
-    int level;
+    int height;
 }Node;
 
 int num = 0;
 
-//functions
-Node* LLrotate(Node* c);
-Node* RRrotate(Node* c);
+//functions 
+//다시 정리하기
+Node* LLrotate(Node* pp);
+Node* RRrotate(Node* pp);
 Node* rebalance(Node* node);
 int balance_factor(Node* node);
 int height(Node* root);
@@ -23,6 +23,8 @@ Node* insert_node(Node* root, int value);
 int get_max(int a, int b);
 int get_value(char request[21]);
 void print_avl(Node* one, Node* two);
+Node* search_node(Node* node, int value);
+Node* newnode(int value){
 
 //main
 int main() {
@@ -53,24 +55,24 @@ int main() {
 }
 
 //functions specific
-Node* LLrotate(Node* c) {
-    Node* b = c->right;
-    Node* a = b->left;
-    b->left = c;
-    c->right = a;
-    c->level = 1 + get_max(height(c->left), height(c->left));
-    b->level = 1 + get_max(height(b->left), height(b->right));
-    return b;
+Node* LLrotate(Node* pp) {
+    Node* cc = pp->right;
+    Node* temp = cc->left;
+    cc->left = pp;
+    pp->right = temp;
+    cc->height = 1 + get_max(height(cc->left), height(cc->right));
+    pp->height = 1 + get_max(height(pp->left), height(pp->right));
+    return cc;
 }
 
-Node* RRrotate(Node* c) {
-    Node* b = c->left;
-    Node* a = b->right;
-    b->right = c;
-    c->left = a;
-    c->level = 1 + get_max(height(c->left), height(c->left));
-    b->level = 1 + get_max(height(b->left), height(b->right));
-    return b;
+Node* RRrotate(Node* pp) {
+    Node* cc = pp->left;
+    Node* temp = cc->right;
+    cc->right = pp;
+    pp->left = temp;
+    cc->height = 1 + get_max(height(cc->left), height(cc->right));
+    pp->height = 1 + get_max(height(pp->left), height(pp->right));
+    return cc;
 }
 
 Node* rebalance(Node* node) {
@@ -92,6 +94,7 @@ Node* rebalance(Node* node) {
 }
 
 int balance_factor(Node* node) {
+    if (node == NULL) return 0;
     int factor = height(node->left) - height(node->right);
     return factor;
 }
@@ -104,37 +107,54 @@ int height(Node* root) {
     else return r + 1;
 }
 
-Node* insert_node(Node* root, int value) {
+Node* newnode(int value){
     Node* new = (Node*)malloc(sizeof(Node));
     new->value = value;
     new->left = NULL;
     new->right = NULL;
-    if (num == 0) {
-        new = root;
-        root->value = value;
-        num++;
-        return root;
+    new->height = 1;
+    num++;
+    return new;
+}
+
+Node* insert_node(Node* root, int value) {
+    if (root == NULL){
+        return newnode(value);
     }
-    else if (root->value < value) {
-        if (root->right == NULL) {
-            root->right = new;
-            num++;
+    if (value < root->value){
+        root->left = insert_node(root->left, value);
+    }
+    else if (value > root->value){
+        root->right = insert_node(root->right, value);
+    }
+    else return root;
+    root->height = get_max(height(root->left), height(root->right)) + 1;
+    int bal = balance_factor(root);
+    if (bal == 2){
+        if (value < root->left->value) return RRrotate(root);
+        else{
+            root->left = LLrotate(root->left);
+            return RRrotate(root);
         }
-        else insert_node(root->right, value);
     }
-    else if (root->value > value) {
-        if (root->left == NULL) {
-            root->left = new;
-            num++;
+    else if (bal == -2){
+        if (value > root->right->value) return LLrotate(root);
+        else{
+            root->right = RRrotate(root->right);
+            return LLrotate(root);
         }
-        else insert_node(root->left, value);
     }
-    else {
-        printf("[%d] ALREADY EXISTS!\n", value);
-    }
-    root->level = 1 + get_max(height(root->left), height(root->right));
-    root = rebalance(root);
     return root;
+}
+
+Node* search_node(Node* node, int value) {
+    if (node == NULL) return NULL;
+    if (node->value == value) return node;
+    Node* crnt = search_node(node->left, value);
+    if (crnt != NULL) return crnt;
+    crnt = search_node(node->right, value);
+    if (crnt != NULL) return crnt;
+    return NULL;
 }
 
 int get_value(char request[21]) {
