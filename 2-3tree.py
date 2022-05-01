@@ -3,7 +3,7 @@ class Node:
         self.data = list([data])
         self.child = []
         self.parent = parent
-        
+
     def is_leaf(self):
         if len(self.child) == 0:
             return True
@@ -88,10 +88,6 @@ class Tree:
                 self.root = self.root.parent
         self.num += 1
 
-    def delete_node(self, data):
-        self.root.remove(data)
-        tree.num -= 1
-    
     def inorder_traversal(self, node):
         list = []
         self.root.traversal(list)
@@ -130,7 +126,6 @@ def view():
     print("---------------------MENU---------------------")
     print("CREATE                      | +(n)")
     print("INSERT NODE                 | +(n)")
-    print("DELETE NODE                 | -(n)")
     print("INORDER TRAVERSE            | I")
     print("RIGHT ROOT LEFT TRAVERSE    | R")
     print("GET MIN                     | N")
