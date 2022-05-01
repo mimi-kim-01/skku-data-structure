@@ -1,144 +1,154 @@
 class Node:
-    def __init__(self, data = []):
-        self.data = data
-        self.left, self.mid, self.right = None, None, None
-        self.parent = None
-    
+    def __init__(self, data, parent = None):
+        self.data = list([data])
+        self.child = []
+        self.parent = parent
+        
     def is_leaf(self):
-        if self.left is None and self.mid is None and self.right is None:
+        if len(self.child) == 0:
             return True
         else: return False
     
-    def insert(self, value):
-        self.data.append(value)
-        if len(self.data) > 1:
-            self.data.sort()
-        return
+    def add_node(self, new):
+        for child in new.child:
+            child.parent = self
+        self.data.extend(new.data)
+        self.data.sort()
+        self.child.extend(new.child)
+        self.child.sort()
+        if len(self.data) >= 3:
+            self.split()
     
+    def insert_node(self, new):
+        if self.is_leaf() is True:
+            self.add_node(new)
+        elif new.data[0] > self.data[-1]:
+            self.child[-1].insert_node(new)
+        else:
+            for i in range(len(self.data)):
+                if new.data[0] < self.data[i]:
+                    self.child[i].insert_node(new)
+                    break
+    
+    def search_node(self, data):
+        if data in self.data:
+            return data
+        elif self.is_leaf():
+            return False
+        elif data > self.data[-1]:
+            return self.child[-1].search_node(data)
+        else:
+            for i in range(len(self.data)):
+                if data < self.data[i]:
+                    return self.child[i].search_node(data)
+    
+    def split(self):
+        left = Node(self.data[0], self)
+        right = Node(self.data[2], self)
+        if len(self.child) != 0:
+            left.child.extend(self.child[0], self.child[1])
+            right.child.extend(self.child[2], self.child[3])
+            self.child[0].parent = left
+            self.child[1].parent = left
+            self.child[2].parent = right
+            self.child[3].parent = right
+        self.data = [self.data[1]]
+        self.child = [left, right]
+        if self.parent:
+            if self in self.parent.child:
+                self.parent.child.remove(self)
+            self.parent.add_node(self)
+        else:
+            left.parent = self
+            right.parent = self
+        
+    def preorder(self):
+        for data in self.data:
+            print(data, end = ' ')
+        for child in self.child:
+            child.preorder()
+    
+    def traversal(self, list):
+        for data in self.data:
+            list.append(data)
+        for child in self.child:
+            child.traversal(list)
+        
 class Tree:
-    def __init__(self, values = []):
+    def __init__(self):
         self.root = None
         self.num = 0
-        for value in values:
-            self.add(value)
     
-    def add(self, value):
+    def insert(self, data):
         if self.root is None:
-            self.root = Node([value])
-            self.num += 1
-            return
-        node = self.valid(self.root, value)
-        node.insert(value)
-        self.rebalance(node)
-        self.num += 1
-        return
-    
-    def valid(self, node, value):
-        if node.is_leaf():
-            return node
-        path = self.path(node, value)
-        if path == 'left':
-            return self.valid(node.left, value)
-        elif path == 'mid':
-            return self.valid(node.mid, value)
-        elif path == 'right':
-            return self.valid(node.right, value)
-        return node
-    
-    def path(self, node, value):
-        if len(node.data) == 1:
-            if value < node.data[0]:
-                return 'left'
-            elif value > node.data[0]:
-                return 'right'
-        elif len(node.data) == 2:
-            if value < node.data[0]:
-                return 'left'
-            elif value > node.data[1]:
-                return 'right'
-            elif node.data[0] < value < node.data[1]:
-                return 'mid'
-    
-    def rebalance(self, node):
-        if len(node.data) < 3: return
-        if node.parent is None and node.is_leaf() is True:
-            self.b_one(node)
-            return
-        path = self.path(node.parent, node.data[0])
-        if path == 'mid':
-            self.b_four(node)
-        elif node.mid is not None:
-            self.b_three(node, path)
-            self.rebalance(node.parent)
+            self.root = Node(data)
         else:
-            self.b_two(node, path)
-            self.rebalance(node.parent)
+            self.root.insert_node(Node(data))
+            while self.root.parent:
+                self.root = self.root.parent
+        self.num += 1
 
-    def b_one(self, node):
-        if len(node.data) < 3: return
-        min_val = node.data.pop(0)
-        left = Node([min_val])
-        max_val = node.data.pop
-        right = Node([max_val])
-        left.parent = node
-        right.parent = node
-        node.left = left
-        node.right = right
-        return
+    def delete_node(self, data):
+        self.root.remove(data)
+        tree.num -= 1
     
-    def b_two(self, node, path):
-        mid = node.data.pop(1)
-        node.parent.insert(mid)
-        if node.parent.mid is None:
-            node.parent.mid = Node(None)
-        if path == 'left':
-            node.parent.mid.insert(node.data.pop())
-        elif path == 'right':
-            node.parent.mid.insert(node.data.pop(0))
-        return
+    def inorder_traversal(self, node):
+        list = []
+        self.root.traversal(list)
+        list.sort()
+        print(list)
     
-    def b_three(self, node, path):
-        crnt = Node(node.data)
-        self.b_one(crnt)
-        crnt.left.left = node.left
-        crnt.right.right = node.right
-        crnt.left.right = Node([node.mid.data[0]])
-        crnt.right.left = Node([node.mid.data[1]])
-        if node.parent is None:
-            self.root = crnt
+    def right_root_left_traversal(self, node):
+        list = []
+        self.root.traversal(list)
+        list.sort(reverse = True)
+        print(list)
+
+    def preorder_traversal(self, node):
+        if self.num == 0:
+            print("THE 2-3 TREE IS EMPTY!")
             return
-        crnt.parent = node.parent
-        if path == 'left':
-            crnt.parent.left = crnt
-        elif path == 'mid':
-            crnt.parent.mid = crnt
-        elif path == 'right':
-            crnt.parent.right = crnt
-        node = crnt
-        return
+        self.root.preorder()
+
+    def get_min(self):
+        list = []
+        self.root.traversal(list)
+        list.sort()
+        print("MIN:", list[0])
     
-    def b_four(self, node):
-        parent = node.parent
-        crnt = Node(parent.data)
-        crnt.parent = parent.parent
-        mid = node.data.pop(1)
-        crnt.insert(mid)
-        self.b_one(crnt)
-        parent.left.parent = crnt.left
-        crnt.left.left = parent.left
-        parent.right = parent = crnt.right
-        crnt.right.right = parent.right
-        crnt.left.right = Node([node.data.pop(0)])
-        crnt.left.right.parent = crnt.left.right
-        crnt.right.left = Node([node.data.pop()])
-        crnt.right.left.parent = crnt.right.left
-        node = crnt
-        if crnt.parent is None:
-            self.root = crnt
-        return
+    def get_max(self):
+        list = []
+        self.root.traversal(list)
+        list.sort(reverse = True)
+        print("MAX:", list[0])
+    
+    def clear(self):
+        self.num = 0
+        self.root = None
+
+def view():
+    print("---------------------MENU---------------------")
+    print("CREATE                      | +(n)")
+    print("INSERT NODE                 | +(n)")
+    print("DELETE NODE                 | -(n)")
+    print("INORDER TRAVERSE            | I")
+    print("RIGHT ROOT LEFT TRAVERSE    | R")
+    print("GET MIN                     | N")
+    print("GET MAX                     | X")
+    print("COUNT NODE                  | #")
+    print("PRINT 2-3 TREE              | P")
+    print("CLEAR 2-3 TREE              | C")
+    print("QUIT                        | Q")
+    print("VIEW MENU                   | V")
+    print("===SOME WARNINGS TO KEEP IN MIND===")
+    print("* 1. Do not use brackets.")
+    print("* 2. No spacing between commands.")
 
 tree = Tree()
+view()
 while True:
+    tree.preorder_traversal(tree.root)
+    print()
     request = input(">>> ")
     if request[0] == 'Q':
         print("THIS PROGRAM ENDS SOON")
@@ -146,6 +156,23 @@ while True:
     for i in range(len(request)):
         if request[i] == '+':
             if len(request) == 2:
-                tree.add(int(request[i+1]))
+                tree.insert(int(request[1:]))
+        elif request[i] == 'P':
+            tree.preorder_traversal(tree.root) 
+            print()   
         elif request[i] == '#':
-            print("cnt: ", tree.num)
+            print("NODE COUNT:", tree.num)
+        elif request[i] == '-':
+            tree.delete_node(request[i+1])
+        elif request[i] == 'I':
+            tree.inorder_traversal(tree.root)
+        elif request[i] == 'R':
+            tree.right_root_left_traversal(tree.root)
+        elif request[i] == 'N':
+            tree.get_min()
+        elif request[i] == 'X':
+            tree.get_max()
+        elif request[i] == 'C':
+            tree.clear()
+        elif request[i] == 'V':
+            view()
