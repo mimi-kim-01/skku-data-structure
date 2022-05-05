@@ -1,7 +1,7 @@
 class Graph:
-    def __init__(self, edge):
+    def __init__(self):
         self.graph = {}
-        self.edge_cnt = edge
+        self.edge_cnt = 0
 
     def insert_vertex(self, vertex):
         self.graph[vertex] = []
@@ -138,7 +138,7 @@ def view():
     print("* 1. No spacing between commands.")  
     print("* 2. No brackets for one vertex!") 
 
-graph = Graph(0)
+graph = Graph()
 view()
 while True:
     graph.print_graph()
