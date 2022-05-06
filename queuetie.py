@@ -1,3 +1,6 @@
+#user list
+Userlist = []
+
 #user
 class User:
     def __init__(self, name, phone, magic):
@@ -6,6 +9,10 @@ class User:
         self.magic = magic
         self.prev = None
         self.next = None
+    
+    def add_to_list(self, Userlist):
+        self.info = [self.name, self.phone, self.magic]
+        Userlist.append(self.info)
 
 #queue
 class Queue:
@@ -59,7 +66,7 @@ class Queue:
         self.head = self.head.next
         self.len2 -= 1      
     
-    def delete(self, phone, magic):
+    def delete(self, phone):
         erase = self.search(phone)
         if erase is None:
             print("Error: wrong information.")
@@ -74,6 +81,9 @@ class Queue:
             del(erase)
         else:
             if self.cur2 == erase:
+                if self.cur2 == self.head:
+                    self.__init__()
+                    return
                 self.cur2 = self.cur2.prev
                 self.cur2.next = None
             else:
@@ -102,14 +112,14 @@ class Queue:
 class Ride:
     def __init__(self, queue, num, time):
         self.line = queue
-        self.time1 = None #waiting time for no magic pass
-        self.time2 = None #waiting time for magic pass
+        self.time1 = None #waiting time for magic pass
+        self.time2 = None #waiting time for no magic pass
         self.num = num #num per ride
         self.time = time #time per ride (include break time)
     
     def get_time(self):
-        self.time1 = int((self.line.len1 / self.num) * self.time)
-        self.time2 = int((self.line.len2 / self.num) * self.time)
+        self.time1 = int((self.line.len1 / self.num)) * self.time
+        self.time2 = int((self.line.len2 / self.num)) * self.time
 
 #tkinter
 from tkinter import *
@@ -133,7 +143,7 @@ class Mainframe(ttk.Frame):
         '''
         self.b1 = ttk.Button(self.master, text = 'Add User', command = self.add_user)
         
-        self.l1 = ttk.Label(self.master, text = 'Ride1')
+        self.l1 = ttk.Button(self.master, text = 'Roller coaster', command = self.manage_ride)
 
         self.b1.place(x = 200, y = 200)
         self.l1.place(x = 100, y = 100)
@@ -143,9 +153,10 @@ class Mainframe(ttk.Frame):
            name = e1.get()
            phone = e2.get()
            magic = CheckVar.get()  
-           username = name
+           username = phone
            username = User(name, phone, magic)   
-           print(username.name)
+           username.add_to_list(Userlist)
+           print(username.name) #그냥 확인용 print, 화면에 add user 후에 어떻게 보여줄지 정해야 함
 
         new = Toplevel(self.master)
         new.title("User")
@@ -172,7 +183,60 @@ class Mainframe(ttk.Frame):
         c1.place(x = 100, y = 80)
         b1.place(x = 60, y = 150)
     
+    def manage_ride(self):
+        def line_enqueue():
+            def enter():
+                phone = e1.get()
+                for i in range(len(Userlist)):
+                    if phone == Userlist[i][1]:
+                        user = User(Userlist[i][0], Userlist[i][1], Userlist[i][2])
+                        roller.line.enqueue(user)
+                        break
+                print(roller.line.head.name) #확인용
+                e1.destroy()
+                b1.destroy()
+
+            e1 = ttk.Entry(new) #phone 입력하라고 알려주는 label 하나 추가
+            b1 = ttk.Button(new, text = 'Enter', command = enter)
+
+            e1.pack() #둘다 place로 고치기
+            b1.pack()
+        
+        def line_dequeue(): #한번 탑승 시 탑승 인원만큼 dequeue되는거임, 인원수 부족할 경우 0명 될떄까지만
+            for i in range(roller.num):
+                if roller.line.len2 == 0: 
+                    return
+                roller.line.dequeue()
+        
+        def line_delete():
+            def enter():
+                phone = e1.get()
+                roller.line.delete(phone)
+                print(roller.line.head.name) #확인용
+                e1.destroy()
+                b1.destroy()
+
+            e1 = ttk.Entry(new)
+            b1 = ttk.Button(new, text = 'Enter', command = enter)
+
+            e1.pack() #둘다 place로 고치기
+            b1.pack()            
+
+        new = Toplevel(self.master)
+        new.title("Roller coaster")
+        new.geometry('200x200')
+
+        b1 = ttk.Button(new, text = 'Enqueue', command = line_enqueue)
+        b2 = ttk.Button(new, text = 'Dequeue', command = line_dequeue)
+        b3 = ttk.Button(new, text = 'Delete', command = line_delete)
+
+        b1.pack() #place로 고치기
+        b2.pack()
+        b3.pack()
 
 window = Tk()
 test = Mainframe(master = window)
+line = Queue()
+roller = Ride(line, 10, 5) #1회 탑승인원 10명, 탑승시간 5분
 window.mainloop()
+#몰라몰라

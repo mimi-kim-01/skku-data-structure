@@ -33,9 +33,12 @@ class Graph:
         return degree
     
     def is_connected(self):
-        if self.edge_cnt >= len(self.graph) - 1:
-            return True
-        else: return False
+        klist = list(self.graph.keys())
+        for i in range(len(klist)):
+            for j in range(1, len(klist)):
+                if self.path_exists(klist[i], klist[j]) is False:
+                    return False
+        return True
     
     def is_empty(self):
         if len(self.graph) == 0:
