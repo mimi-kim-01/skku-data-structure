@@ -100,13 +100,24 @@ class Queue:
         return None
 
     def print_queue(self):
-        crnt = self.line.head 
-        for i in range(self.line.len2):
+        crnt = self.head
+        for i in range(self.len2):
             print(crnt.name, end = ' ')
             print(crnt.phone, end = ' ')
-            print(crnt.magic, end = ' ')
+            if crnt.magic == False :
+                print("일반 회원입니다.\n")
+            else :
+                print("매직패스 이용자\n")
             print()
             crnt = crnt.next
+            
+    def print_howmuch(self):
+        print("대기인원수: %d" %(self.len2))
+        """
+        이거 Ride 클래스에 있는 변수 호출을 어떻게 해야할까
+        maybe = roller.get_time()
+        print("예상소요시간: %d" %(maybe.time2))
+        """
 
 #ride
 class Ride:
@@ -134,20 +145,21 @@ class Mainframe(ttk.Frame):
         self.create_widgets()
     
     def create_widgets(self):
-        '''이거 스타일 예쁘게 고치기..!
-        self.style = ttk.Style()
+        '''
+        s = ttk.Style()
         
-        self.style.map("Tbutton",
+        s.map("S.Tbutton",
         foreground = [('pressed', 'orchid'), ('active', 'thistle')])
-        self.style.configure("TButton", width = 10)
+        s.configure("S.TButton", width = 10)
         '''
         self.b1 = ttk.Button(self.master, text = 'Add User', command = self.add_user)
-        
+        self.b2 = ttk.Button(self.master, text = 'show Line', command = self.show_line)
         self.l1 = ttk.Button(self.master, text = 'Roller coaster', command = self.manage_ride)
-
+        
         self.b1.place(x = 200, y = 200)
-        self.l1.place(x = 100, y = 100)
-    
+        self.b2.place(x= 200, y = 150)
+        self.l1.place(x = 200, y = 100)
+        
     def add_user(self): #user 네임을 정해줘야할듯?? 왜냐면 enqueue할때 그게 필요함
         def new_user():
            name = e1.get()
@@ -158,7 +170,7 @@ class Mainframe(ttk.Frame):
            username.add_to_list(Userlist)
            print(username.name) #그냥 확인용 print, 화면에 add user 후에 어떻게 보여줄지 정해야 함
 
-        new = Toplevel(self.master)
+        new = Toplevel(self.master) #외부 윈도우
         new.title("User")
         new.geometry('200x200')
 
@@ -182,6 +194,13 @@ class Mainframe(ttk.Frame):
         e2.place(x = 60, y = 50)
         c1.place(x = 100, y = 80)
         b1.place(x = 60, y = 150)
+
+    def show_line(self):
+        print("현재 대기줄을 출력합니다.\n")
+        roller.line.print_howmuch()
+        roller.line.print_queue()
+        
+
     
     def manage_ride(self):
         def line_enqueue():
@@ -197,10 +216,14 @@ class Mainframe(ttk.Frame):
                 b1.destroy()
 
             e1 = ttk.Entry(new) #phone 입력하라고 알려주는 label 하나 추가
+            l2 = ttk.Label(new, text = "Insert Phone number")
             b1 = ttk.Button(new, text = 'Enter', command = enter)
 
-            e1.pack() #둘다 place로 고치기
-            b1.pack()
+            
+            e1.place(x=100, y=150, width = 200)
+            l2.place(x=100, y =130, width = 200)
+            b1.place(x=100, y=180, width = 200)
+           
         
         def line_dequeue(): #한번 탑승 시 탑승 인원만큼 dequeue되는거임, 인원수 부족할 경우 0명 될떄까지만
             for i in range(roller.num):
@@ -208,35 +231,39 @@ class Mainframe(ttk.Frame):
                     return
                 roller.line.dequeue()
         
-        def line_delete():
-            def enter():
+        def line_delete(): 
+            def enter(): # 엔터누르면 사라짐
                 phone = e1.get()
                 roller.line.delete(phone)
                 print(roller.line.head.name) #확인용
                 e1.destroy()
                 b1.destroy()
 
-            e1 = ttk.Entry(new)
+            e1 = ttk.Entry(new) # 새로 생성
             b1 = ttk.Button(new, text = 'Enter', command = enter)
 
-            e1.pack() #둘다 place로 고치기
-            b1.pack()            
+            #둘다 place로 고치기
+            e1.place(x=100, y=120, width = 200)
+            b1.place(x=100, y=150, width = 200)
+            #사라지기
+            e1.destroy()
+            b1.destroy()
 
         new = Toplevel(self.master)
         new.title("Roller coaster")
-        new.geometry('200x200')
+        new.geometry('500x500')
 
         b1 = ttk.Button(new, text = 'Enqueue', command = line_enqueue)
         b2 = ttk.Button(new, text = 'Dequeue', command = line_dequeue)
         b3 = ttk.Button(new, text = 'Delete', command = line_delete)
-
-        b1.pack() #place로 고치기
-        b2.pack()
-        b3.pack()
+        #place로 수정
+        b1.place(x=100, y=10, width = 200)
+        b2.place(x=100, y=50, width = 200)
+        b3.place(x=100, y=100,width = 200)
 
 window = Tk()
 test = Mainframe(master = window)
 line = Queue()
 roller = Ride(line, 10, 5) #1회 탑승인원 10명, 탑승시간 5분
+
 window.mainloop()
-#몰라몰라
