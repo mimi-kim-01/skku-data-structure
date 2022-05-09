@@ -112,7 +112,7 @@ class Queue:
             crnt = crnt.next
             
     def print_howmuch(self):
-        print("대기인원수: %d" %(self.len2))
+        print("대기인원수: %d" %(self.len2)) #이건 ride에 함수를 넣어야 호출이 가능하지 않나..
         """
         이거 Ride 클래스에 있는 변수 호출을 어떻게 해야할까
         maybe = roller.get_time()
@@ -129,8 +129,8 @@ class Ride:
         self.time = time #time per ride (include break time)
     
     def get_time(self):
-        self.time1 = int((self.line.len1 / self.num)) * self.time
-        self.time2 = int((self.line.len2 / self.num)) * self.time
+        self.time1 = int(self.line.len1 / self.num) * self.time
+        self.time2 = int(self.line.len2 / self.num) * self.time
 
 #tkinter
 from tkinter import *
@@ -168,6 +168,8 @@ class Mainframe(ttk.Frame):
            username = phone
            username = User(name, phone, magic)   
            username.add_to_list(Userlist)
+           e1.delete(0,END)
+           e2.delete(0,END)
            print(username.name) #그냥 확인용 print, 화면에 add user 후에 어떻게 보여줄지 정해야 함
 
         new = Toplevel(self.master) #외부 윈도우
@@ -212,16 +214,16 @@ class Mainframe(ttk.Frame):
                         roller.line.enqueue(user)
                         break
                 print(roller.line.head.name) #확인용
+                l1.destroy()
                 e1.destroy()
                 b1.destroy()
 
-            e1 = ttk.Entry(new) #phone 입력하라고 알려주는 label 하나 추가
-            l2 = ttk.Label(new, text = "Insert Phone number")
+            l1 = ttk.Label(new, text = "Insert Phone number")
+            e1 = ttk.Entry(new) 
             b1 = ttk.Button(new, text = 'Enter', command = enter)
 
-            
+            l1.place(x=100, y =130, width = 200)
             e1.place(x=100, y=150, width = 200)
-            l2.place(x=100, y =130, width = 200)
             b1.place(x=100, y=180, width = 200)
            
         
