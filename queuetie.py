@@ -110,14 +110,6 @@ class Queue:
                 print("매직패스 이용자\n")
             print()
             crnt = crnt.next
-            
-    def print_howmuch(self):
-        print("대기인원수: %d" %(self.len2)) #이건 ride에 함수를 넣어야 호출이 가능하지 않나..
-        """
-        이거 Ride 클래스에 있는 변수 호출을 어떻게 해야할까
-        maybe = roller.get_time()
-        print("예상소요시간: %d" %(maybe.time2))
-        """
 
 #ride
 class Ride:
@@ -131,6 +123,11 @@ class Ride:
     def get_time(self):
         self.time1 = int(self.line.len1 / self.num) * self.time
         self.time2 = int(self.line.len2 / self.num) * self.time
+
+    def print_howmuch(self):
+        print("대기인원수: %d" %(self.line.len2))
+        self.get_time()
+        print("예상소요시간: %d" %(self.time2))
 
 #tkinter
 from tkinter import *
@@ -170,6 +167,7 @@ class Mainframe(ttk.Frame):
            username.add_to_list(Userlist)
            e1.delete(0,END)
            e2.delete(0,END)
+           #c1 deselect 
            print(username.name) #그냥 확인용 print, 화면에 add user 후에 어떻게 보여줄지 정해야 함
 
         new = Toplevel(self.master) #외부 윈도우
@@ -199,11 +197,9 @@ class Mainframe(ttk.Frame):
 
     def show_line(self):
         print("현재 대기줄을 출력합니다.\n")
-        roller.line.print_howmuch()
+        roller.print_howmuch()
         roller.line.print_queue()
         
-
-    
     def manage_ride(self):
         def line_enqueue():
             def enter():
