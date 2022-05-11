@@ -142,20 +142,17 @@ class Mainframe(ttk.Frame):
         self.create_widgets()
     
     def create_widgets(self):
-        '''
-        s = ttk.Style()
-        
-        s.map("S.Tbutton",
-        foreground = [('pressed', 'orchid'), ('active', 'thistle')])
-        s.configure("S.TButton", width = 10)
-        '''
         self.b1 = ttk.Button(self.master, text = 'Add User', command = self.add_user)
-        self.b2 = ttk.Button(self.master, text = 'show Line', command = self.show_line)
+        self.b2 = ttk.Button(self.master, text = 'Show Line', command = self.show_line)
         self.l1 = ttk.Button(self.master, text = 'Roller coaster', command = self.manage_ride)
         
         self.b1.place(x = 200, y = 200)
         self.b2.place(x= 200, y = 150)
         self.l1.place(x = 200, y = 100)
+        
+        self.style = ttk.Style(self)
+        self.style.configure('Tbutton', 
+        foreground = [('pressed', 'orchid'), ('active', 'thistle')])
         
     def add_user(self): #user 네임을 정해줘야할듯?? 왜냐면 enqueue할때 그게 필요함
         def new_user():
@@ -196,9 +193,28 @@ class Mainframe(ttk.Frame):
         b1.place(x = 60, y = 150)
 
     def show_line(self):
-        print("현재 대기줄을 출력합니다.\n")
-        roller.print_howmuch()
-        roller.line.print_queue()
+        new = Toplevel(self.master)
+        new.title("Line")
+        new.geometry('200x200')
+
+        roller.get_time()
+
+        l1 = ttk.Label(new, text = '현재 대기줄을 출력합니다.')
+        # line1, time1도 나중에 추가
+        l2 = ttk.Label(new, text = '현재 대기 인원: ' + str(roller.line.len2))
+        l3 = ttk.Label(new, text = '예상 대기 시간: ' + str(roller.time2))
+        
+        l1.pack()
+        l2.pack()
+        l3.pack()
+
+        crnt = roller.line.head
+        # 사용자 출력을 treeview로 한번 출력 바꿔보기
+        while crnt is not None:
+            cc = crnt.name
+            cc = ttk.Label(new, text = crnt.phone)
+            cc.pack()
+            crnt = crnt.next
         
     def manage_ride(self):
         def line_enqueue():
