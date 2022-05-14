@@ -195,21 +195,23 @@ class Mainframe(ttk.Frame):
     def show_line(self):
         new = Toplevel(self.master)
         new.title("Line")
-        new.geometry('200x200')
+        new.geometry('400x400')
 
         roller.get_time()
 
-        l1 = ttk.Label(new, text = '현재 대기줄을 출력합니다.')
+        l1 = ttk.Label(new, text = '현재 대기줄 정보를 출력합니다.\n')
         # line1, time1도 나중에 추가
-        l2 = ttk.Label(new, text = '현재 대기 인원: ' + str(roller.line.len2))
-        l3 = ttk.Label(new, text = '예상 대기 시간: ' + str(roller.time2))
-        
+        l2 = ttk.Label(new, text = '대기 인원(매직패스): ' + str(roller.line.len1) +'\n대기 인원(전체): ' + str(roller.line.len2))
+        l3 = ttk.Label(new, text = '예상 대기 시간(매직패스): ' + str(roller.time1) + '\n예상 대기 시간(전체): ' +str(roller.time2))
+        l4 = ttk.Label(new, text = '현재 대기줄 인원의 전화번호')
+
         l1.pack()
         l2.pack()
         l3.pack()
+        l4.pack()
 
         crnt = roller.line.head
-        # 사용자 출력을 treeview로 한번 출력 바꿔보기
+
         while crnt is not None:
             cc = crnt.name
             cc = ttk.Label(new, text = crnt.phone)
