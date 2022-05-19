@@ -1,5 +1,6 @@
 #user list
 Userlist = []
+Phonelist = []
 
 #user
 class User:
@@ -13,6 +14,7 @@ class User:
     def add_to_list(self, Userlist):
         self.info = [self.name, self.phone, self.magic]
         Userlist.append(self.info)
+        Phonelist.append(self.phone)
 
 #queue
 class Queue:
@@ -36,6 +38,7 @@ class Queue:
         if self.len2 == 0:
             self.create(new)
             return
+
         if new.magic:
             self.cur1.next = new
             self.cur1.prev = self.cur1
@@ -43,20 +46,24 @@ class Queue:
             new.next = self.cur1.next
             self.cur1 = new
             self.len1 += 1
+
             if self.len2 == self.len1:
                 self.cur1.next = self.cur2
                 self.cur2.prev = self.cur1
                 self.cur1.next = self.cur2
+
         else: 
             if self.len2 == self.len1:
                 self.cur2 = self.cur1
                 self.cur2.prev = self.cur1.prev
                 self.cur2.next = self.cur1.next
+
             self.cur2.next = new
             self.cur2.prev = self.cur2
             new.prev = self.cur2
             new.next = None
             self.cur2 = new
+
         self.len2 += 1
 
     def dequeue(self):
@@ -68,17 +75,23 @@ class Queue:
     
     def delete(self, phone):
         erase = self.search(phone)
+
         if erase is None:
-            print("Error: wrong information.")
+            return -1
+
         if erase.magic:
             self.len1 -= 1
+
             if self.cur1 == erase:
                 self.cur1 = self.cur1.prev
                 self.cur1.next = self.cur1.next
+
             else:
                 erase.prev.next = erase.next
                 erase.next.prev = erase.prev
+
             del(erase)
+
         else:
             if self.cur2 == erase:
                 if self.cur2 == self.head:
@@ -86,6 +99,7 @@ class Queue:
                     return
                 self.cur2 = self.cur2.prev
                 self.cur2.next = None
+                
             else:
                 erase.prev.next = erase.next
                 erase.next.prev = erase.prev
@@ -98,18 +112,6 @@ class Queue:
                 return find
             find = find.next
         return None
-
-    def print_queue(self):
-        crnt = self.head
-        for i in range(self.len2):
-            print(crnt.name, end = ' ')
-            print(crnt.phone, end = ' ')
-            if crnt.magic == False :
-                print("일반 회원입니다.\n")
-            else :
-                print("매직패스 이용자\n")
-            print()
-            crnt = crnt.next
 
 #ride
 class Ride:
@@ -124,11 +126,6 @@ class Ride:
         self.time1 = int(self.line.len1 / self.num) * self.time
         self.time2 = int(self.line.len2 / self.num) * self.time
 
-    def print_howmuch(self):
-        print("대기인원수: %d" %(self.line.len2))
-        self.get_time()
-        print("예상소요시간: %d" %(self.time2))
-
 #tkinter
 from tkinter import *
 from tkinter import ttk
@@ -138,49 +135,58 @@ class Mainframe(ttk.Frame):
         super().__init__(master)
         self.master = master
         master.title("Welcome to Queuetie Land!")
-        master.geometry('600x400')
+        master.geometry('500x500')
         self.create_widgets()
     
     def create_widgets(self):
+        style = ttk.Style()
+        style.theme_use('alt')
+        style.configure('TButton', font=('American typewriter', 14), background='#fcbbe8', foreground='white')
+        style.map('TButton', background=[('active', '#f558dd')])
+        
+        self.subtitle = ttk.Label(self.master, text = 'Welcome to', font = ('Arial', 15))
+        self.title1 = ttk.Label(self.master, text = 'QUEUETIE LAND', font = ('Arial', 30))
+
         self.b1 = ttk.Button(self.master, text = 'Add User', command = self.add_user)
         self.b2 = ttk.Button(self.master, text = 'Show Line', command = self.show_line)
-        self.l1 = ttk.Button(self.master, text = 'Roller coaster', command = self.manage_ride)
-        
+        self.b3 = ttk.Button(self.master, text = 'Enqueue', command = self.line_enqueue)
+        self.b4 = ttk.Button(self.master, text = 'Dequeue', command = self.line_dequeue)
+        self.b5 = ttk.Button(self.master, text = 'Delete', command = self.line_delete)
+
+        self.subtitle.place(x = 110, y = 50)
+        self.title1.place(x = 110, y = 90)
         self.b1.place(x = 200, y = 200)
-        self.b2.place(x= 200, y = 150)
-        self.l1.place(x = 200, y = 100)
+        self.b2.place(x= 200, y = 250)
+        self.b3.place(x = 200, y = 300)
+        self.b4.place(x = 200, y = 350)
+        self.b5.place(x = 200, y = 400)
         
-        self.style = ttk.Style(self)
-        self.style.configure('Tbutton', 
-        foreground = [('pressed', 'orchid'), ('active', 'thistle')])
-        
-    def add_user(self): #user 네임을 정해줘야할듯?? 왜냐면 enqueue할때 그게 필요함
+    def add_user(self): 
         def new_user():
            name = e1.get()
            phone = e2.get()
-           magic = CheckVar.get()  
+           magic = CheckVar.get()   
+
            username = phone
            username = User(name, phone, magic)   
            username.add_to_list(Userlist)
+
            e1.delete(0,END)
            e2.delete(0,END)
-           #c1 deselect 
-           print(username.name) #그냥 확인용 print, 화면에 add user 후에 어떻게 보여줄지 정해야 함
 
-        new = Toplevel(self.master) #외부 윈도우
+        new = Toplevel(self.master)
         new.title("User")
-        new.geometry('200x200')
+        new.geometry('250x200')
 
         l1 = ttk.Label(new, text = 'Name')
         l2 = ttk.Label(new, text = 'Phone')
         l3 = ttk.Label(new, text = 'Magic')
 
         CheckVar = BooleanVar()
-        CheckVar.set(False)
 
         e1 = ttk.Entry(new)
         e2 = ttk.Entry(new)
-        c1 = ttk.Checkbutton(new, text = 'Yes', variable = BooleanVar, onvalue = True, offvalue = False)
+        c1 = ttk.Checkbutton(new, text = 'Yes', variable = CheckVar, onvalue = True, offvalue = False)
 
         b1 = ttk.Button(new, text = 'Add', command = new_user) 
 
@@ -195,91 +201,113 @@ class Mainframe(ttk.Frame):
     def show_line(self):
         new = Toplevel(self.master)
         new.title("Line")
-        new.geometry('400x400')
+        new.geometry('250x250')
 
         roller.get_time()
 
-        l1 = ttk.Label(new, text = '현재 대기줄 정보를 출력합니다.\n')
-        # line1, time1도 나중에 추가
-        l2 = ttk.Label(new, text = '대기 인원(매직패스): ' + str(roller.line.len1) +'\n대기 인원(전체): ' + str(roller.line.len2))
-        l3 = ttk.Label(new, text = '예상 대기 시간(매직패스): ' + str(roller.time1) + '\n예상 대기 시간(전체): ' +str(roller.time2))
-        l4 = ttk.Label(new, text = '현재 대기줄 인원의 전화번호')
+        l1 = ttk.Label(new, text = "-- Current Line Info --")
+        l2 = ttk.Label(new, text = 'Waiting number(Magic pass): ' + str(roller.line.len1) +'\nWaiting number(Whole): ' + str(roller.line.len2))
+        l3 = ttk.Label(new, text = 'Waiting time(Magic pass): ' + str(roller.time1) + '\nWaiting time(Whole): ' + str(roller.time2))
+        l4 = ttk.Label(new, text = '-- Phone Number List --')
 
-        l1.pack()
-        l2.pack()
-        l3.pack()
-        l4.pack()
+        l1.place(x = 75, y = 0)
+        l2.place(x = 50, y = 30)
+        l3.place(x = 50, y = 70)
+        l4.place(x = 72, y = 120)
 
         crnt = roller.line.head
+        i = 0
 
         while crnt is not None:
             cc = crnt.name
             cc = ttk.Label(new, text = crnt.phone)
-            cc.pack()
+            cc.place(x = 30 + i, y = 145)
             crnt = crnt.next
-        
-    def manage_ride(self):
-        def line_enqueue():
-            def enter():
-                phone = e1.get()
+            i += 20
+    
+    def line_enqueue(self):
+        def enter():
+            phone = e1.get()
+
+            if phone not in Phonelist:
+                l2 = ttk.Label(new, text = "Error: Wrong information.")
+                l2.place(x=30, y=150, width=200) 
+
+            elif roller.line.search(phone) is not None:
+                l3 = ttk.Label(new, text = "Error: Already in line.")
+                l3.place(x = 30, y=150, width=200) 
+
+            else: 
                 for i in range(len(Userlist)):
                     if phone == Userlist[i][1]:
                         user = User(Userlist[i][0], Userlist[i][1], Userlist[i][2])
                         roller.line.enqueue(user)
                         break
-                print(roller.line.head.name) #확인용
-                l1.destroy()
-                e1.destroy()
-                b1.destroy()
 
-            l1 = ttk.Label(new, text = "Insert Phone number")
-            e1 = ttk.Entry(new) 
-            b1 = ttk.Button(new, text = 'Enter', command = enter)
+                l4 = ttk.Label(new, text = "Added.")
+                l4.place(x = 30, y = 150, width = 200)
 
-            l1.place(x=100, y =130, width = 200)
-            e1.place(x=100, y=150, width = 200)
-            b1.place(x=100, y=180, width = 200)
-           
-        
-        def line_dequeue(): #한번 탑승 시 탑승 인원만큼 dequeue되는거임, 인원수 부족할 경우 0명 될떄까지만
-            for i in range(roller.num):
-                if roller.line.len2 == 0: 
-                    return
-                roller.line.dequeue()
-        
-        def line_delete(): 
-            def enter(): # 엔터누르면 사라짐
-                phone = e1.get()
-                roller.line.delete(phone)
-                print(roller.line.head.name) #확인용
-                e1.destroy()
-                b1.destroy()
+                crnt = roller.line.head
+                i = 0
 
-            e1 = ttk.Entry(new) # 새로 생성
-            b1 = ttk.Button(new, text = 'Enter', command = enter)
-
-            #둘다 place로 고치기
-            e1.place(x=100, y=120, width = 200)
-            b1.place(x=100, y=150, width = 200)
-            #사라지기
-            e1.destroy()
-            b1.destroy()
+                while crnt is not None:
+                    cc = crnt.name
+                    cc = ttk.Label(new, text = crnt.phone)
+                    cc.place(x = 30 + i, y = 170)
+                    crnt = crnt.next
+                    i += 20
+            
+            e1.delete(0,END)
 
         new = Toplevel(self.master)
-        new.title("Roller coaster")
-        new.geometry('500x500')
+        new.title("Enqueue")
+        new.geometry('250x300')
 
-        b1 = ttk.Button(new, text = 'Enqueue', command = line_enqueue)
-        b2 = ttk.Button(new, text = 'Dequeue', command = line_dequeue)
-        b3 = ttk.Button(new, text = 'Delete', command = line_delete)
-        #place로 수정
-        b1.place(x=100, y=10, width = 200)
-        b2.place(x=100, y=50, width = 200)
-        b3.place(x=100, y=100,width = 200)
+        l1 = ttk.Label(new, text = "Insert Phone number")
+        e1 = ttk.Entry(new) 
+        b1 = ttk.Button(new, text = 'Enter', command = enter)
+        
+        l1.place(x = 30, y = 10, width = 150)
+        e1.place(x = 30, y = 50, width = 200)
+        b1.place(x = 30, y = 90, width = 100)          
+
+    def line_dequeue(self):
+        for i in range(roller.num):
+            if roller.line.len2 == 0: 
+                return
+            roller.line.dequeue()
+
+    def line_delete(self):
+        def enter():
+            phone = e1.get()
+            result = roller.line.delete(phone)
+
+            if result == -1:
+                l3 = ttk.Label(new, text = "Error: Wrong information.")
+                l3.place(x = 30, y = 150, width = 200)
+
+            else:
+                l4 = ttk.Label(new, text = "Deleted.")
+                l4.place(x=30, y =150, width = 200)
+
+            e1.delete(0,END)
+
+        new = Toplevel(self.master)
+        new.title("Delete")
+        new.geometry('250x300')
+
+        l1 = ttk.Label(new, text = "Insert Phone number")
+        e1 = ttk.Entry(new) 
+        b1 = ttk.Button(new, text = 'Enter', command = enter)
+        
+        l1.place(x = 30, y = 10, width = 150)
+        e1.place(x = 30, y = 50, width = 200)
+        b1.place(x = 30, y = 90, width = 100)         
 
 window = Tk()
 test = Mainframe(master = window)
+
 line = Queue()
-roller = Ride(line, 10, 5) #1회 탑승인원 10명, 탑승시간 5분
+roller = Ride(line, 2, 5) #1회 탑승인원 2명, 탑승시간 5분
 
 window.mainloop()
