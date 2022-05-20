@@ -1,20 +1,20 @@
 #user list
 Userlist = []
-Phonelist = []
+IDlist = []
 
 #user
 class User:
-    def __init__(self, name, phone, magic):
+    def __init__(self, name, ID, magic):
         self.name = name
-        self.phone = phone
+        self.ID = ID
         self.magic = magic
         self.prev = None
         self.next = None
     
     def add_to_list(self, Userlist):
-        self.info = [self.name, self.phone, self.magic]
+        self.info = [self.name, self.ID, self.magic]
         Userlist.append(self.info)
-        Phonelist.append(self.phone)
+        IDlist.append(self.ID)
 
 #queue
 class Queue:
@@ -38,33 +38,30 @@ class Queue:
         if self.len2 == 0:
             self.create(new)
             return
-
+        
         if new.magic:
-            self.cur1.next = new
-            self.cur1.prev = self.cur1
-            new.prev = self.cur1
-            new.next = self.cur1.next
-            self.cur1 = new
-            self.len1 += 1
+            if self.cur1 is None:
+                self.cur1 = new
+                self.cur1.next = self.head
+                self.head.prev = self.cur1
+                self.head = self.cur1
+                self.len1 += 1
+                self.len2 += 1
 
-            if self.len2 == self.len1:
-                self.cur1.next = self.cur2
-                self.cur2.prev = self.cur1
-                self.cur1.next = self.cur2
+            else:
+                self.cur1.next.prev = new
+                new.next = self.cur1.next
+                self.cur1.next = new
+                new.prev = self.cur1
+                self.cur1 = new
+                self.len1 += 1
+                self.len2 += 1
 
-        else: 
-            if self.len2 == self.len1:
-                self.cur2 = self.cur1
-                self.cur2.prev = self.cur1.prev
-                self.cur2.next = self.cur1.next
-
+        else:
             self.cur2.next = new
-            self.cur2.prev = self.cur2
             new.prev = self.cur2
-            new.next = None
             self.cur2 = new
-
-        self.len2 += 1
+            self.len2 += 1
 
     def dequeue(self):
         dequeued = self.head
@@ -73,11 +70,14 @@ class Queue:
         self.head = self.head.next
         self.len2 -= 1      
     
-    def delete(self, phone):
-        erase = self.search(phone)
+    def delete(self, ID):
+        erase = self.search(ID)
 
         if erase is None:
             return -1
+        
+        if erase == self.head:
+            self.dequeue()
 
         if erase.magic:
             self.len1 -= 1
@@ -99,16 +99,16 @@ class Queue:
                     return
                 self.cur2 = self.cur2.prev
                 self.cur2.next = None
-                
+
             else:
                 erase.prev.next = erase.next
                 erase.next.prev = erase.prev
             self.len2 -= 1
 
-    def search(self, phone):
+    def search(self, ID):
         find = self.head
         while find is not None:
-            if find.phone == phone:
+            if find.ID == ID:
                 return find
             find = find.next
         return None
@@ -164,11 +164,11 @@ class Mainframe(ttk.Frame):
     def add_user(self): 
         def new_user():
            name = e1.get()
-           phone = e2.get()
+           ID = e2.get()
            magic = CheckVar.get()   
 
-           username = phone
-           username = User(name, phone, magic)   
+           username = ID
+           username = User(name, ID, magic)   
            username.add_to_list(Userlist)
 
            e1.delete(0,END)
@@ -179,7 +179,7 @@ class Mainframe(ttk.Frame):
         new.geometry('250x200')
 
         l1 = ttk.Label(new, text = 'Name')
-        l2 = ttk.Label(new, text = 'Phone')
+        l2 = ttk.Label(new, text = 'ID')
         l3 = ttk.Label(new, text = 'Magic')
 
         CheckVar = BooleanVar()
@@ -208,7 +208,7 @@ class Mainframe(ttk.Frame):
         l1 = ttk.Label(new, text = "-- Current Line Info --")
         l2 = ttk.Label(new, text = 'Waiting number(Magic pass): ' + str(roller.line.len1) +'\nWaiting number(Whole): ' + str(roller.line.len2))
         l3 = ttk.Label(new, text = 'Waiting time(Magic pass): ' + str(roller.time1) + '\nWaiting time(Whole): ' + str(roller.time2))
-        l4 = ttk.Label(new, text = '-- Phone Number List --')
+        l4 = ttk.Label(new, text = '-- ID Number List --')
 
         l1.place(x = 75, y = 0)
         l2.place(x = 50, y = 30)
@@ -220,26 +220,26 @@ class Mainframe(ttk.Frame):
 
         while crnt is not None:
             cc = crnt.name
-            cc = ttk.Label(new, text = crnt.phone)
+            cc = ttk.Label(new, text = crnt.ID)
             cc.place(x = 30 + i, y = 145)
             crnt = crnt.next
             i += 20
     
     def line_enqueue(self):
         def enter():
-            phone = e1.get()
+            ID = e1.get()
 
-            if phone not in Phonelist:
+            if ID not in IDlist:
                 l2 = ttk.Label(new, text = "Error: Wrong information.")
                 l2.place(x=30, y=150, width=200) 
 
-            elif roller.line.search(phone) is not None:
+            elif roller.line.search(ID) is not None:
                 l3 = ttk.Label(new, text = "Error: Already in line.")
                 l3.place(x = 30, y=150, width=200) 
 
             else: 
                 for i in range(len(Userlist)):
-                    if phone == Userlist[i][1]:
+                    if ID == Userlist[i][1]:
                         user = User(Userlist[i][0], Userlist[i][1], Userlist[i][2])
                         roller.line.enqueue(user)
                         break
@@ -247,15 +247,15 @@ class Mainframe(ttk.Frame):
                 l4 = ttk.Label(new, text = "Added.")
                 l4.place(x = 30, y = 150, width = 200)
 
-                crnt = roller.line.head
-                i = 0
+            crnt = roller.line.head
+            i = 0
 
-                while crnt is not None:
-                    cc = crnt.name
-                    cc = ttk.Label(new, text = crnt.phone)
-                    cc.place(x = 30 + i, y = 170)
-                    crnt = crnt.next
-                    i += 20
+            while crnt is not None:
+                cc = crnt.name
+                cc = ttk.Label(new, text = crnt.ID)
+                cc.place(x = 30 + i, y = 170)
+                crnt = crnt.next
+                i += 20
             
             e1.delete(0,END)
 
@@ -263,7 +263,7 @@ class Mainframe(ttk.Frame):
         new.title("Enqueue")
         new.geometry('250x300')
 
-        l1 = ttk.Label(new, text = "Insert Phone number")
+        l1 = ttk.Label(new, text = "Insert ID number")
         e1 = ttk.Entry(new) 
         b1 = ttk.Button(new, text = 'Enter', command = enter)
         
@@ -279,8 +279,8 @@ class Mainframe(ttk.Frame):
 
     def line_delete(self):
         def enter():
-            phone = e1.get()
-            result = roller.line.delete(phone)
+            ID = e1.get()
+            result = roller.line.delete(ID)
 
             if result == -1:
                 l3 = ttk.Label(new, text = "Error: Wrong information.")
@@ -296,7 +296,7 @@ class Mainframe(ttk.Frame):
         new.title("Delete")
         new.geometry('250x300')
 
-        l1 = ttk.Label(new, text = "Insert Phone number")
+        l1 = ttk.Label(new, text = "Insert ID number")
         e1 = ttk.Entry(new) 
         b1 = ttk.Button(new, text = 'Enter', command = enter)
         

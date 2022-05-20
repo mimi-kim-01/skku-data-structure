@@ -40,18 +40,19 @@ def delete(arr):
     del arr[current]
     if current == size-1: current = 0
 
-def move(arr, position): #이거 수정하기, data 순서가 안바뀜!
+def move(arr, position): 
     global current
     if position > size - 1 or position < 0:
         print("Error")
         return
+    temp = arr[current]
     if current > position:
-        for i in range(position, current, -1):
-          arr[i], arr[i-1] = arr[i-1], arr[i]
+        for i in range(position, current, 1):
+          arr[i], arr[i+1] = arr[i+1], arr[i]
     elif current < position:
         for i in range(current, position, 1):
           arr[i], arr[i+1] = arr[i+1], arr[i]
-    current = position
+    arr[position] = temp
 
 def print_array(arr):
     global current
@@ -107,7 +108,7 @@ while True:
                 move(arr, current-1)
             elif request[i+1] == 'N':
                 move(arr, current+1)
-            else: move(arr, int(request[i+1]))
+            else: move(arr, current - current + int(request[i+1]) - 1)
             i += 1
         elif request[i] == 'L':
             break
