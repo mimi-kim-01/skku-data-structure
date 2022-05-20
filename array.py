@@ -108,7 +108,9 @@ while True:
                 move(arr, current-1)
             elif request[i+1] == 'N':
                 move(arr, current+1)
-            else: move(arr, current - current + int(request[i+1]) - 1)
+            else: 
+                move(arr, current - current + int(request[i+1]) - 1)
+                current = int(request[i+1]) - 1
             i += 1
         elif request[i] == 'L':
             break
