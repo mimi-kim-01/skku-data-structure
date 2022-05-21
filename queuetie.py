@@ -1,4 +1,4 @@
-#user list
+#user list, ID list
 Userlist = []
 IDlist = []
 
@@ -34,6 +34,7 @@ class Queue:
         self.cur2 = new
         self.len2 += 1
 
+    #enqueue 
     def enqueue(self, new): 
         if self.len2 == 0:
             self.create(new)
@@ -63,13 +64,15 @@ class Queue:
             self.cur2 = new
             self.len2 += 1
 
+    #dequeue 
     def dequeue(self):
         dequeued = self.head
         if dequeued.magic:
             self.len1 -= 1
         self.head = self.head.next
         self.len2 -= 1      
-    
+
+    #delete 
     def delete(self, ID):
         erase = self.search(ID)
 
@@ -105,6 +108,7 @@ class Queue:
                 erase.next.prev = erase.prev
             self.len2 -= 1
 
+    #search
     def search(self, ID):
         find = self.head
         while find is not None:
@@ -121,7 +125,8 @@ class Ride:
         self.time2 = None #waiting time for no magic pass
         self.num = num #num per ride
         self.time = time #time per ride (include break time)
-    
+
+    #calculate waiting time
     def get_time(self):
         self.time1 = int(self.line.len1 / self.num) * self.time
         self.time2 = int(self.line.len2 / self.num) * self.time
@@ -130,6 +135,7 @@ class Ride:
 from tkinter import *
 from tkinter import ttk
 
+#mainframe
 class Mainframe(ttk.Frame):
     def __init__(self, master):
         super().__init__(master)
@@ -138,6 +144,7 @@ class Mainframe(ttk.Frame):
         master.geometry('500x500')
         self.create_widgets()
     
+    #create widgets in main window
     def create_widgets(self):
         style = ttk.Style()
         style.theme_use('alt')
@@ -160,7 +167,8 @@ class Mainframe(ttk.Frame):
         self.b3.place(x = 200, y = 300)
         self.b4.place(x = 200, y = 350)
         self.b5.place(x = 200, y = 400)
-        
+    
+    #add user
     def add_user(self): 
         def new_user():
            name = e1.get()
@@ -198,6 +206,7 @@ class Mainframe(ttk.Frame):
         c1.place(x = 100, y = 80)
         b1.place(x = 60, y = 150)
 
+    #show current line info
     def show_line(self):
         new = Toplevel(self.master)
         new.title("Line")
@@ -224,7 +233,8 @@ class Mainframe(ttk.Frame):
             cc.place(x = 30 + i, y = 145)
             crnt = crnt.next
             i += 20
-    
+
+    #enqueue to line
     def line_enqueue(self):
         def enter():
             ID = e1.get()
@@ -271,12 +281,14 @@ class Mainframe(ttk.Frame):
         e1.place(x = 30, y = 50, width = 200)
         b1.place(x = 30, y = 90, width = 100)          
 
+    #dequeue from line
     def line_dequeue(self):
         for i in range(roller.num):
             if roller.line.len2 == 0: 
                 return
             roller.line.dequeue()
 
+    #delete from line
     def line_delete(self):
         def enter():
             ID = e1.get()
@@ -308,6 +320,6 @@ window = Tk()
 test = Mainframe(master = window)
 
 line = Queue()
-roller = Ride(line, 2, 5) #1회 탑승인원 2명, 탑승시간 5분
+roller = Ride(line, 2, 5) #2 ppl, 5 min (per ride)
 
 window.mainloop()
